@@ -33,9 +33,25 @@ app.getInfo = (location, object) => {
             console.log(object.country);
             console.log(object.lat, object.lng);
             app.getCurrency(object.country, object);
+            app.getWeather(object.lat, object.lng);
         } else {
             alert("Something went wrong." + status);
         }
+    });
+}
+
+
+app.getWeather = (latitude, longitude) => {
+    $.ajax({
+        url: `https://api.darksky.net/forecast/ea2f7a7bab3daacc9f54f177819fa1d3/${latitude},${longitude}`,
+        method: 'GET',
+        dataType: 'jsonp',
+        data: {
+            'units': 'auto'
+        }
+    })
+    .then((res) => {
+        console.log(res);
     });
 }
 
@@ -48,10 +64,12 @@ app.getCurrency = (country, object) => {
             fullText: true
         }
     }).then((res) => {
-        console.log(res);
+        // console.log(res);
         object.currencyCode = res[0].currencies[0].code;
-        console.log(object.currencyCode);
-        // app.convertCurrency('CAD', currencyCode);
+        object.currencySymbol = res[0].currencies[0].symbol;
+        object.currencyName = res[0].currencies[0].name;
+        // console.log(object.currency);
+        app.convertCurrency(app.user.currencyCode, app.destination.currencyCode);
     });
 }
 
@@ -78,7 +96,6 @@ app.events = () => {
         e.preventDefault();
         const user = $('#user-location').val();
         const destination = $('#destination').val();
-        // const destination = $('#destination').val();
         app.getInfo(user, app.user);
         app.getInfo(destination, app.destination);
         console.log(app.user, app.destination);
