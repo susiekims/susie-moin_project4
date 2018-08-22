@@ -18,9 +18,12 @@ var autocomplete;
 // most of the other APIs we are requesting data from accept location info in the form of lat lng coords
 // so we pass user location into Google  geocoder to get lat and lng coords to use in other API requests
 
+app.initAutocomplete = (id) => {
+    autocomplete =  new google.maps.places.Autocomplete(document.getElementById(id));
+}
+
+// i dont actually call this function anywhere just wanna save in just in case
 app.getPlace = (object) => {
-    const search = $('#user-location').val();
-    autocomplete =  new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
     google.maps.event.addListener(autocomplete, 'place_changed', function() {
         const place = autocomplete.getPlace();
         console.log(place);
@@ -36,7 +39,6 @@ app.getPlace = (object) => {
     });
 }
 
-
 app.getInfo = (location, object) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({
@@ -50,8 +52,8 @@ app.getInfo = (location, object) => {
             object.country = addressComponents[0].short_name;
             object.lat = results[0].geometry.location.lat();
             object.lng = results[0].geometry.location.lng();
-            console.log(object.country);
-            console.log(object.lat, object.lng);
+            // console.log(object.country);
+            // console.log(object.lat, object.lng);
             app.getCurrency(object.country, object);
             app.getWeather(object.lat, object.lng);
         } else {
@@ -84,7 +86,7 @@ app.getCurrency = (country, object) => {
             fullText: true
         }
     }).then((res) => {
-        console.log(res);
+        // console.log(res);
         object.currencyCode = res[0].currencies[0].code;
         object.currencySymbol = res[0].currencies[0].symbol;
         object.currencyName = res[0].currencies[0].name;
@@ -111,13 +113,19 @@ app.getRestaurants = () => {
 }
 
 app.events = () => {
-    app.getPlace(app.user);
+    app.initAutocomplete('user');
+    app.initAutocomplete('destination');
     $('form').on('submit', (e) => {
         e.preventDefault();
-        // const user = $('#user-location').val();
+        const user = $('#user').val();
         const destination = $('#destination').val();
-        app.getInfo(destination, app.destination);
-        console.log(app.user, app.destination);
+        if (user.length > 0 && destination.length > 0) {
+            app.getInfo(user, app.user);
+            app.getInfo(destination, app.destination);
+            console.log(app.user, app.destination);
+        }
+        $('#user').val('');
+        $('#destination').val('');
     });
 }
 
