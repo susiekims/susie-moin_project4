@@ -43,8 +43,7 @@ app.getInfo = (location, object) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({
         'address': location
-    },
-    (results, status) => {
+    }, (results, status) => {
         if (status == google.maps.GeocoderStatus.OK) {
             const addressComponents = results[0].address_components.filter((component) => {
                 return component.types[0] === 'country';
@@ -72,9 +71,12 @@ app.getWeather = (latitude, longitude) => {
         }
     })
     .then((res) => {
-        console.log(res);
- 
-    });
+            app.currentTemp(res.currently.temperature);
+        });
+}
+
+app.currentTemp = (temp) => {
+    console.log(temp);
 }
 
 app.getCurrency = (country, object) => {
@@ -133,7 +135,7 @@ app.init = () => {
     app.events();
 }
 
-$(function() {
-    console.log( "ready!" );
+$(function () {
+    console.log("ready!");
     app.init();
 });
