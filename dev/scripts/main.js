@@ -51,8 +51,7 @@ app.getDestinationInfo = (location) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({
         'address': location
-    },
-    (results, status) => {
+    }, (results, status) => {
         if (status == google.maps.GeocoderStatus.OK) {
             const addressComponents = results[0].address_components.filter((component) => {
                 return component.types[0] === 'country';
@@ -83,10 +82,10 @@ app.getWeather = (latitude, longitude) => {
         }
     })
     .then((res) => {
-        console.log(res);
-    });
+        currentTemp = res.currently.temperature;
+        console.log(currentTemp);
+      });
 }
-
 app.getCityCode = (latitude, longitude) => {
     $.ajax({
         url: `https://api.sygictravelapi.com/1.0/en/places/detect-parents`,
@@ -183,7 +182,7 @@ app.init = () => {
     app.events();
 }
 
-$(function() {
-    console.log( "ready!" );
+$(function () {
+    console.log("ready!");
     app.init();
 });
