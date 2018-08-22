@@ -11,10 +11,30 @@
 const app = {};
 app.user = {};
 app.destination = {};
+var place;
+var autocomplete;
 
 // get user's current location
 // most of the other APIs we are requesting data from accept location info in the form of lat lng coords
 // so we pass user location into Google  geocoder to get lat and lng coords to use in other API requests
+
+app.getPlace = (object) => {
+    const search = $('#user-location').val();
+    autocomplete =  new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
+    google.maps.event.addListener(autocomplete, 'place_changed', function() {
+        const place = autocomplete.getPlace();
+        console.log(place);
+        object.location = place.address_components[0].long_name;
+        object.lat = place.geometry.location.lat();
+        object.lng = place.geometry.location.lng();
+        const components = place.address_components.filter((component) => {
+            return component.types[0] === 'country';
+        });
+        object.country = components[0].short_name;
+        console.log(object.lat, object.country);
+        app.getCurrency(object.country, object);
+    });
+}
 
 
 app.getInfo = (location, object) => {
@@ -27,7 +47,7 @@ app.getInfo = (location, object) => {
             const addressComponents = results[0].address_components.filter((component) => {
                 return component.types[0] === 'country';
             });
-            object.country = addressComponents[0].long_name;
+            object.country = addressComponents[0].short_name;
             object.lat = results[0].geometry.location.lat();
             object.lng = results[0].geometry.location.lng();
             console.log(object.country);
@@ -40,7 +60,6 @@ app.getInfo = (location, object) => {
     });
 }
 
-
 app.getWeather = (latitude, longitude) => {
     $.ajax({
         url: `https://api.darksky.net/forecast/ea2f7a7bab3daacc9f54f177819fa1d3/${latitude},${longitude}`,
@@ -52,6 +71,7 @@ app.getWeather = (latitude, longitude) => {
     })
     .then((res) => {
         console.log(res);
+ 
     });
 }
 
@@ -64,11 +84,10 @@ app.getCurrency = (country, object) => {
             fullText: true
         }
     }).then((res) => {
-        // console.log(res);
+        console.log(res);
         object.currencyCode = res[0].currencies[0].code;
         object.currencySymbol = res[0].currencies[0].symbol;
         object.currencyName = res[0].currencies[0].name;
-        // console.log(object.currency);
         app.convertCurrency(app.user.currencyCode, app.destination.currencyCode);
     });
 }
@@ -92,11 +111,11 @@ app.getRestaurants = () => {
 }
 
 app.events = () => {
+    app.getPlace(app.user);
     $('form').on('submit', (e) => {
         e.preventDefault();
-        const user = $('#user-location').val();
+        // const user = $('#user-location').val();
         const destination = $('#destination').val();
-        app.getInfo(user, app.user);
         app.getInfo(destination, app.destination);
         console.log(app.user, app.destination);
     });
