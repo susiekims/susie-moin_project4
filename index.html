@@ -8,11 +8,11 @@
 </head>
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGcj5aiX4UZjNdw-ane2U6hhle1hV0vCw" type="text/javascript"></script>
     <script src="public/scripts/main.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoImY83DtgdM97LRKQoA33y9VuicAtNPI&libraries=places"></script>
     <form>
-        <input type="search" placeholder="where are you" class="search-bar" id="user-location">
-        <input type="search" placeholder="where do you want to go?" class="search-bar" id="destination">
+        <input type="search" placeholder="where are you" class="autocomplete" id="user">
+        <input type="search" placeholder="where do you want to go?" class="autocomplete" id="destination">
         <input type="submit">
     </form>
 </body>
