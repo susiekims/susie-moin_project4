@@ -11,35 +11,43 @@
 const app = {};
 app.user = {};
 app.destination = {};
-var place;
-var autocomplete;
+
 
 // get user's current location
 // most of the other APIs we are requesting data from accept location info in the form of lat lng coords
 // so we pass user location into Google  geocoder to get lat and lng coords to use in other API requests
 
 app.initAutocomplete = (id) => {
-    autocomplete =  new google.maps.places.Autocomplete(document.getElementById(id));
+    new google.maps.places.Autocomplete(document.getElementById(id));
 }
 
-// i dont actually call this function anywhere just wanna save in just in case
-app.getPlace = (object) => {
-    google.maps.event.addListener(autocomplete, 'place_changed', function() {
-        const place = autocomplete.getPlace();
-        console.log(place);
-        object.location = place.address_components[0].long_name;
-        object.lat = place.geometry.location.lat();
-        object.lng = place.geometry.location.lng();
-        const components = place.address_components.filter((component) => {
-            return component.types[0] === 'country';
-        });
-        object.country = components[0].short_name;
-        console.log(object.lat, object.country);
-        app.getCurrency(object.country, object);
+app.getUserInfo = (location) => {
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({
+        'address': location
+    },
+    (results, status) => {
+        if (status == google.maps.GeocoderStatus.OK) {
+            const addressComponents = results[0].address_components.filter((component) => {
+                return component.types[0] === 'country';
+            });
+            console.log(addressComponents);
+            app.user.countryCode = addressComponents[0].short_name;
+            app.user.countryName = addressComponents[0].long_name;
+            app.user.lat = results[0].geometry.location.lat();
+            app.user.lng = results[0].geometry.location.lng();
+            // console.log(object.country);
+            // console.log(object.lat, object.lng);
+            app.getCurrency(app.user.countryCode);
+            app.getWeather(app.user.lat, app.user.lng);
+        } else {
+            alert("Something went wrong." + status);
+        }
     });
 }
 
-app.getInfo = (location, object) => {
+
+app.getDestinationInfo = (location) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({
         'address': location
@@ -48,13 +56,16 @@ app.getInfo = (location, object) => {
             const addressComponents = results[0].address_components.filter((component) => {
                 return component.types[0] === 'country';
             });
-            object.country = addressComponents[0].short_name;
-            object.lat = results[0].geometry.location.lat();
-            object.lng = results[0].geometry.location.lng();
+            console.log(addressComponents);
+            app.destination.countryCode = addressComponents[0].short_name;
+            app.destination.countryName = addressComponents[0].long_name;
+            app.destination.lat = results[0].geometry.location.lat();
+            app.destination.lng = results[0].geometry.location.lng();
             // console.log(object.country);
             // console.log(object.lat, object.lng);
-            app.getCurrency(object.country, object);
-            app.getWeather(object.lat, object.lng);
+            app.getCurrency(app.destination.countryCode);
+            app.getWeather(app.destination.lat, app.destination.lng);
+            app.getCityCode(app.destination.lat, app.destination.lng);
         } else {
             alert("Something went wrong." + status);
         }
@@ -71,15 +82,51 @@ app.getWeather = (latitude, longitude) => {
         }
     })
     .then((res) => {
-            app.currentTemp(res.currently.temperature);
-        });
+        currentTemp = res.currently.temperature;
+        console.log(currentTemp);
+      });
+}
+app.getCityCode = (latitude, longitude) => {
+    $.ajax({
+        url: `https://api.sygictravelapi.com/1.0/en/places/detect-parents`,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'x-api-key': 'zziJYcjlmE8LbWHdvU5vC8UcSFvKEPsC3nkAl7eK'
+        },
+        data: {
+            'location': `${latitude},${longitude}`
+        }
+    })
+    .then((res) => {
+        console.log(res.data);
+        const data = res.data.places[0];
+        const id = data.id;
+        console.log(data);
+        console.log(id);
+        app.getPOIs(id);
+    });
 }
 
-app.currentTemp = (temp) => {
-    console.log(temp);
+app.getPOIs = (cityCode) => {
+    $.ajax({
+        url: `https://api.sygictravelapi.com/1.0/en/places/list`,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'x-api-key': 'zziJYcjlmE8LbWHdvU5vC8UcSFvKEPsC3nkAl7eK'
+        },
+        data: {
+            'parents': cityCode,
+            'level': 'poi',
+            'limit': 3,
+        }
+    }).then((res)=> {
+        console.log(res.data.places);
+    })
 }
 
-app.getCurrency = (country, object) => {
+app.getCurrency = (country) => {
     $.ajax({
         url: `https://restcountries.eu/rest/v2/name/${country}`,
         method: 'GET',
@@ -88,11 +135,9 @@ app.getCurrency = (country, object) => {
             fullText: true
         }
     }).then((res) => {
-        // console.log(res);
-        object.currencyCode = res[0].currencies[0].code;
-        object.currencySymbol = res[0].currencies[0].symbol;
-        object.currencyName = res[0].currencies[0].name;
-        app.convertCurrency(app.user.currencyCode, app.destination.currencyCode);
+        const currency = res[0].currencies[0];
+        console.log(currency);
+        // app.convertCurrency(app.user.currency.code, app.destination.currency.code);
     });
 }
 
@@ -119,11 +164,13 @@ app.events = () => {
     app.initAutocomplete('destination');
     $('form').on('submit', (e) => {
         e.preventDefault();
+        app.user = {};
+        app.destination = {};
         const user = $('#user').val();
         const destination = $('#destination').val();
         if (user.length > 0 && destination.length > 0) {
-            app.getInfo(user, app.user);
-            app.getInfo(destination, app.destination);
+            app.getUserInfo(user);
+            app.getDestinationInfo(destination);
             console.log(app.user, app.destination);
         }
         $('#user').val('');
