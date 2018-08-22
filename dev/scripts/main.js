@@ -6,6 +6,7 @@
 // pass city info and call zomato API and get top 3 random restaurants 
 // pass city info into 
 
+
 // create empty object to store all methods
 const app = {};
 app.user = {};
@@ -21,22 +22,22 @@ app.getInfo = (location, object) => {
     geocoder.geocode({
         'address': location
     },
-    (results, status) => {
-        if (status == google.maps.GeocoderStatus.OK) {
-            const addressComponents = results[0].address_components.filter((component) => {
-                return component.types[0] === 'country';
-            });
-            object.country = addressComponents[0].long_name;
-            object.lat = results[0].geometry.location.lat();
-            object.lng = results[0].geometry.location.lng();
-            console.log(object.country);
-            console.log(object.lat, object.lng);
-            app.getCurrency(object.country, object);
-            app.getWeather(object.lat, object.lng);
-        } else {
-            alert("Something went wrong." + status);
-        }
-    });
+        (results, status) => {
+            if (status == google.maps.GeocoderStatus.OK) {
+                const addressComponents = results[0].address_components.filter((component) => {
+                    return component.types[0] === 'country';
+                });
+                object.country = addressComponents[0].long_name;
+                object.lat = results[0].geometry.location.lat();
+                object.lng = results[0].geometry.location.lng();
+                console.log(object.country);
+                console.log(object.lat, object.lng);
+                app.getCurrency(object.country, object);
+                app.getWeather(object.lat, object.lng);
+            } else {
+                alert("Something went wrong." + status);
+            }
+        });
 }
 
 
@@ -49,9 +50,13 @@ app.getWeather = (latitude, longitude) => {
             'units': 'auto'
         }
     })
-    .then((res) => {
-        console.log(res);
-    });
+        .then((res) => {
+            app.currentTemp(res.currently.temperature);
+        });
+}
+
+app.currentTemp = (temp) => {
+    console.log(temp);
 }
 
 app.getCurrency = (country, object) => {
@@ -86,15 +91,8 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
     });
 }
 
-app.getWeather = (latitude, longitude) => {
-    $.ajax({
-        url: `${app.weatherURL}${app.weatherKey}${latitude},${longitude}`,
-        method: 'GET',
-        dataType: 'json'
-})
-    .then((res) => {
-        console.log(res);
-    });
+app.getRestaurants = () => {
+
 }
 
 app.events = () => {
@@ -108,7 +106,11 @@ app.events = () => {
     });
 }
 
-$(function() {
-    console.log( "ready!" );
+app.init = () => {
+    app.events();
+}
+
+$(function () {
+    console.log("ready!");
     app.init();
 });
