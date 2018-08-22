@@ -21,50 +21,6 @@ app.initAutocomplete = (id) => {
     new google.maps.places.Autocomplete(document.getElementById(id));
 }
 
-// i dont actually call this function anywhere just wanna save in just in case
-// app.getPlace = (object) => {
-//     google.maps.event.addListener(autocomplete, 'place_changed', function() {
-//         const place = autocomplete.getPlace();
-//         console.log(place);
-//         object.location = place.address_components[0].long_name;
-//         object.lat = place.geometry.location.lat();
-//         object.lng = place.geometry.location.lng();
-//         const components = place.address_components.filter((component) => {
-//             return component.types[0] === 'country';
-//         });
-//         object.country = components[0].short_name;
-//         console.log(object.lat, object.country);
-//         app.getCurrency(object.country, object);
-//     });
-// }
-
-// app.getInfo = (location, object) => {
-//     const geocoder = new google.maps.Geocoder();
-//     geocoder.geocode({
-//         'address': location
-//     },
-//     (results, status) => {
-//         if (status == google.maps.GeocoderStatus.OK) {
-//             const addressComponents = results[0].address_components.filter((component) => {
-//                 return component.types[0] === 'country';
-//             });
-//             console.log(addressComponents);
-//             object.countryCode = addressComponents[0].short_name;
-//             object.countryName = addressComponents[0].long_name;
-//             object.lat = results[0].geometry.location.lat();
-//             object.lng = results[0].geometry.location.lng();
-//             // console.log(object.country);
-//             // console.log(object.lat, object.lng);
-//             app.getCurrency(object.countryCode, object);
-//             app.getWeather(object.lat, object.lng);
-//             app.getCityCode(object.lat, object.lng);
-//         } else {
-//             alert("Something went wrong." + status);
-//         }
-//     });
-// }
-
-
 app.getUserInfo = (location) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({
