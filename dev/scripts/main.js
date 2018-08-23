@@ -13,6 +13,7 @@ const app = {};
 //user info
 app.user = {};
 app.destination = {};
+app.weather = {};
 
 // display info
 app.currency= {};
@@ -72,6 +73,9 @@ app.getDestinationInfo = (location) => {
             app.getWeather(app.destination.lat, app.destination.lng, app.destination);
             app.getCurrencies(app.user.countryCode, app.destination.countryCode);
             app.getCityCode(app.destination.lat, app.destination.lng);
+            app.getLanguage(app.destination.countryCode);
+            app.getRestaurants(app.destination.lat, app.destination.lng);
+            app.getAirports(app.destination.lat, app.destination.lng);
         } else {
             alert("Something went wrong." + status);
         }
@@ -104,10 +108,15 @@ app.getWeather = (latitude, longitude, object) => {
     })
     .then((res) => {
         object.weatherConditions = res.daily.summary;
-        object.currentTemp = Math.floor(res.currently.temperature);
+        object.currentTemp = Math.round(res.currently.temperature);
+        object.currentIcon = res.currently.icon;
+        // object.weatherIcon = res.daily.icon;
+
         // console.log(object.currentTemp);
         // console.log(object.weatherConditions);
         app.displayWeather(object);
+        // console.log(res.currently.icon);
+        
     });
 }
 
@@ -160,8 +169,42 @@ app.getPOIs = (cityCode) => {
     });
 }
 
+
+app.getAirports = (lat, lng) => {
+    $.ajax({
+        url: `https://api.sygictravelapi.com/1.0/en/places/list`,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'x-api-key': 'zziJYcjlmE8LbWHdvU5vC8UcSFvKEPsC3nkAl7eK'
+        },
+        data: {
+            'location': `${lat},${lng}`,
+            'tags': 'Airport',
+        }
+    }) .then ((res) => {
+        console.log(res);  
+    })
+}
+
+app.getLanguage = (country) => {
+    $.ajax({
+        url: `https://restcountries.eu/rest/v2/name/${country}`,
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            fullText: true
+        }
+    }) .then((res) => {
+        console.log(res[0].languages[0].name);
+        app.destination.languages = res[0].languages[0].name;
+        console.log(res);
+    })
+}
+
+
 app.getRestaurants = (cityCode) => {
-   return $.ajax({
+  $.ajax({
         url: `https://api.sygictravelapi.com/1.0/en/places/list`,
         method: 'GET',
         dataType: 'json',
@@ -176,7 +219,7 @@ app.getRestaurants = (cityCode) => {
             'limit': 100,
             'levels': 'poi'
         }
-    }).then((res) => {
+   }).then((res) => {
         const restaurantList = res.data.places;
         console.log(restaurantList);
         const filteredRestaurants = restaurantList.filter((place)=> {
@@ -300,6 +343,7 @@ app.events = () => {
         $('div').empty();
         const user = $('#user').val();
         const destination = $('#destination').val();
+        $('#test span').text(user);
         if (user.length > 0 && destination.length > 0) {
             app.getUserInfo(user, destination);
             setTimeout(()=> {
