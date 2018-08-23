@@ -18,6 +18,7 @@ app.destination = {};
 app.currency= {};
 app.POIs = [];
 app.exchangeRate;
+app.restaurants = []
 
 
 // get user's current location
@@ -129,7 +130,7 @@ app.getPOIs = (cityCode) => {
         data: {
             'parents': cityCode,
             'level': 'poi',
-            'limit': 3,
+            'limit': 4,
         }
     }).then((res)=> {
         const points = res.data.places;
@@ -137,7 +138,8 @@ app.getPOIs = (cityCode) => {
         points.forEach((point)=> {
             const place = {
                 'name': point.name,
-                'description': point.perex
+                'description': point.perex,
+                'photo': point.thumbnail_url,
             };
             app.POIs.push(place);
         });
@@ -157,10 +159,21 @@ app.getRestaurants = (lat, lng) => {
         data: {
             'categories': 'restaurants',
             'categories_not': 'discovering|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
-            'location': `${lat},${lng}`
+            'location': `${lat},${lng}`,
+            'limit': 4
         }
     }).then((res) => {
-        console.log(res.data.places);
+        const restaurantList = res.data.places;
+        console.log(restaurantList);
+        restaurantList.forEach((place)=> {
+            const restaurant = {
+                'name': place.name,
+                'description': place.perex,
+                'photo': place.thumbnail_url
+            };
+            app.restaurants.push(restaurant);
+        });
+        app.displayRestaurants(app.restaurants);
     });
 }    
 
@@ -173,7 +186,6 @@ app.getCurrencies = (country1, country2) => {
             fullText: true
         }
     }).then((res1) => {
-        
         $.ajax({
             url: `https://restcountries.eu/rest/v2/name/${country2}`,
             method: 'GET',
@@ -211,8 +223,15 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
     });
 }
 
-app.displayRestaurants = () => {
-
+app.displayRestaurants = (array) => {
+    const title = `<h1>Restaurants</h1>`;
+    $('#restaurants').append(title);
+    array.forEach((item) => {
+        const name = `<h2>${item.name}<h2>`;
+        const desc = `<p>${item.description}</p>`;
+        const photo = `<img src="${item.photo}">`;
+        $('#restaurants').append(name, photo, desc);
+    });
 }
 
 app.displayCurrency = (object) => {
@@ -227,7 +246,8 @@ app.displayPOIs = (array) => {
     array.forEach((item) => {
         const name = `<h2>${item.name}<h2>`;
         const desc = `<p>${item.description}</p>`;
-        $('#POI').append(name, desc);
+        const photo = `<img src="${item.photo}">`;
+        $('#POI').append(name, photo, desc);
     });
 }
 
@@ -244,11 +264,6 @@ app.events = () => {
     $('form').on('submit', (e) => {
         e.preventDefault();
         $('div').empty();
-        app.user = {};
-        app.destination = {};
-        app.currency= {};
-        app.POIs = [];
-        app.exchangeRate;
         const user = $('#user').val();
         const destination = $('#destination').val();
         if (user.length > 0 && destination.length > 0) {
@@ -262,6 +277,12 @@ app.events = () => {
         }
         $('#user').val('');
         $('#destination').val('');
+        app.user = {};
+        app.destination = {};
+        app.currency= {};
+        app.POIs = [];
+        app.exchangeRate;
+        app.restaurants = [];
     });
 }
 
