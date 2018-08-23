@@ -212,7 +212,7 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
 }
 
 app.displayRestaurants = () => {
-    
+
 }
 
 app.displayCurrency = (object) => {
