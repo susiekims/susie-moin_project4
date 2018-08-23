@@ -1,12 +1,18 @@
 @import 'setup';
 
 body {
-	color: red;
-	font-size: 50px;
+	color: black;
+	font-size: 62.5%;
 }
 
 .container {
-	max-width: 900px;
-	margin: 0 auto;
-	background: red;
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.container div {
+	width: 400px;
+	// height: 300px;
+	border: 1px solid black;
 }
