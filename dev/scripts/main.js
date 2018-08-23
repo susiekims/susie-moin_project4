@@ -11,6 +11,7 @@
 const app = {};
 app.user = {};
 app.destination = {};
+app.weather = {};
 
 
 // get user's current location
@@ -39,7 +40,7 @@ app.getUserInfo = (location) => {
             // console.log(object.country);
             // console.log(object.lat, object.lng);
             app.getCurrency(app.user.countryCode);
-            app.getWeather(app.user.lat, app.user.lng);
+            app.getWeather(app.user.lat, app.user.lng, app.user);
         } else {
             alert("Something went wrong." + status);
         }
@@ -64,15 +65,20 @@ app.getDestinationInfo = (location) => {
             // console.log(object.country);
             // console.log(object.lat, object.lng);
             app.getCurrency(app.destination.countryCode);
-            app.getWeather(app.destination.lat, app.destination.lng);
+            app.getWeather(app.destination.lat, app.destination.lng, app.destination);
             app.getCityCode(app.destination.lat, app.destination.lng);
+            app.getLanguage(app.destination.countryCode);
+            app.getRestaurants(app.destination.lat, app.destination.lng);
+            app.getAirports(app.destination.lat, app.destination.lng);
         } else {
             alert("Something went wrong." + status);
         }
     });
 }
 
-app.getWeather = (latitude, longitude) => {
+
+
+app.getWeather = (latitude, longitude, object) => {
     $.ajax({
         url: `https://api.darksky.net/forecast/ea2f7a7bab3daacc9f54f177819fa1d3/${latitude},${longitude}`,
         method: 'GET',
@@ -82,10 +88,24 @@ app.getWeather = (latitude, longitude) => {
         }
     })
     .then((res) => {
-        currentTemp = res.currently.temperature;
+        let weatherConditions = res.daily.summary;
+        let currentTemp = res.currently.temperature;
+        object.weatherConditions = res.daily.summary;
+
         console.log(currentTemp);
-      });
+        console.log(weatherConditions);
+
+    });
+
+    // function (num1, num2) {
+    //     return (num1 > num2) ? num1 - num2 : num2 - num1
+    // }
+
+    
+
+
 }
+
 app.getCityCode = (latitude, longitude) => {
     $.ajax({
         url: `https://api.sygictravelapi.com/1.0/en/places/detect-parents`,
@@ -126,6 +146,38 @@ app.getPOIs = (cityCode) => {
     })
 }
 
+app.getAirports = (lat, lng) => {
+    $.ajax({
+        url: `https://api.sygictravelapi.com/1.0/en/places/list`,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'x-api-key': 'zziJYcjlmE8LbWHdvU5vC8UcSFvKEPsC3nkAl7eK'
+        },
+        data: {
+            'location': `${lat},${lng}`,
+            'tags': 'Airport',
+        }
+    }) .then ((res) => {
+        console.log(res.data.places[0].name);  
+    })
+}
+
+app.getLanguage = (country) => {
+    $.ajax({
+        url: `https://restcountries.eu/rest/v2/name/${country}`,
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            fullText: true
+        }
+    }) .then((res) => {
+        console.log(res[0].languages[0].name);
+        app.destination.languages = res[0].languages[0].name;
+        console.log(res);
+    })
+}
+
 app.getCurrency = (country) => {
     $.ajax({
         url: `https://restcountries.eu/rest/v2/name/${country}`,
@@ -155,7 +207,21 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
     });
 }
 
-app.getRestaurants = () => {
+app.getRestaurants = (lat, lng) => {
+    $.ajax({
+        url: `https://api.sygictravelapi.com/1.0/en/places/list`,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'x-api-key': 'zziJYcjlmE8LbWHdvU5vC8UcSFvKEPsC3nkAl7eK'
+        },
+        data: {
+            'categories_not': '|discovering|going_out|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
+            'location': `${lat},${lng}`
+        }
+    }).then((res) => {
+        console.log(res);
+    });
 
 }
 
@@ -168,6 +234,7 @@ app.events = () => {
         app.destination = {};
         const user = $('#user').val();
         const destination = $('#destination').val();
+        $('#test span').text(user);
         if (user.length > 0 && destination.length > 0) {
             app.getUserInfo(user);
             app.getDestinationInfo(destination);
