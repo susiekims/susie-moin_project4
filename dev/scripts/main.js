@@ -72,9 +72,23 @@ app.getDestinationInfo = (location) => {
             app.getWeather(app.destination.lat, app.destination.lng, app.destination);
             app.getCurrencies(app.user.countryCode, app.destination.countryCode);
             app.getCityCode(app.destination.lat, app.destination.lng);
-            app.getRestaurants(app.destination.lat, app.destination.lng);
         } else {
             alert("Something went wrong." + status);
+        }
+    });
+}
+
+app.getCoordinates = (location) => {
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({
+        'address': location
+    }, (res, err) => {
+        if (err == google.maps.GeocoderStatus.OK) {
+            let latitude = res[0].geometry.location.lat();
+            let longitude = res[0].geometry.location.lng();
+            console.log(latitude, longitude);
+        } else {
+            alert("Something went wrong." + err);
         }
     });
 }
@@ -110,12 +124,10 @@ app.getCityCode = (latitude, longitude) => {
         }
     })
     .then((res) => {
-        console.log(res.data);
         const data = res.data.places[0];
-        const id = data.id;
-        console.log(data);
-        console.log(id);
-        app.getPOIs(id);
+        app.destination.cityCode = data.id;
+        app.getPOIs(app.destination.cityCode);
+        app.filterRestaurants(app.destination.cityCode);
     });
 }
 
@@ -148,8 +160,10 @@ app.getPOIs = (cityCode) => {
     });
 }
 
-app.getRestaurants = (lat, lng) => {
-    $.ajax({
+app.offset = 4;
+
+app.getRestaurants = (cityCode, offset = 0) => {
+   return $.ajax({
         url: `https://api.sygictravelapi.com/1.0/en/places/list`,
         method: 'GET',
         dataType: 'json',
@@ -158,22 +172,48 @@ app.getRestaurants = (lat, lng) => {
         },
         data: {
             'categories': 'restaurants',
+            'tags': 'restaurants',
             'categories_not': 'discovering|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
-            'location': `${lat},${lng}`,
-            'limit': 4
+            'parents': cityCode,
+            'limit': 4,
+            'offset': offset,
+            'levels': 'poi'
         }
-    }).then((res) => {
+    });
+}
+    
+app.filterRestaurants = (code) => { 
+    app.getRestaurants(code).then((res) => {
         const restaurantList = res.data.places;
+
         console.log(restaurantList);
-        restaurantList.forEach((place)=> {
-            const restaurant = {
-                'name': place.name,
-                'description': place.perex,
-                'photo': place.thumbnail_url
-            };
-            app.restaurants.push(restaurant);
+
+        const filteredRestaurants = restaurantList.filter((place)=> {
+            return place.thumbnail_url && place.perex
         });
-        app.displayRestaurants(app.restaurants);
+
+        console.log(filteredRestaurants.length);
+        
+        if (filteredRestaurants.length < 4 ) {
+            app.offset+=4;
+            app.getRestaurants(app.destination.cityCode, offset)
+            .then((res)=>{
+                console.log(res);
+            });
+            console.log(filteredRestaurants);
+        } else {
+            console.log('else!');
+            filteredRestaurants.forEach((place)=> {
+                const restaurant = {
+                    'name': place.name,
+                    'description': place.perex,
+                    'photo': place.thumbnail_url
+                };
+                app.restaurants.push(restaurant);
+            });
+            console.log(app.restaurants);
+            app.displayRestaurants(app.restaurants);
+        }
     });
 }    
 
