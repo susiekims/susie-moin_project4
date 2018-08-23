@@ -11,6 +11,10 @@ body {
 	flex-wrap: wrap;
 }
 
+input[type=search] {
+	width: 300px;
+}
+
 .container div {
 	width: 400px;
 	// height: 300px;

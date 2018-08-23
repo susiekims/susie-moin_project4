@@ -13,13 +13,16 @@ const app = {};
 //user info
 app.user = {};
 app.destination = {};
-app.weather = {};
 
 // display info
+app.weather = {};
 app.currency= {};
 app.POIs = [];
 app.exchangeRate;
-app.restaurants = []
+app.restaurants = [];
+app.airport = {};
+app.language = {};
+
 
 
 // get user's current location
@@ -43,10 +46,6 @@ app.getUserInfo = (location, location2) => {
             app.user.countryName = addressComponents[0].long_name;
             app.user.lat = results[0].geometry.location.lat();
             app.user.lng = results[0].geometry.location.lng();
-            // console.log(object.country);
-            // console.log(object.lat, object.lng);
-            // app.getCurrency(app.user.countryCode);
-            // app.getWeather(app.user.lat, app.user.lng, app.user);
             app.getDestinationInfo(location2);
 
         } else {
@@ -64,12 +63,10 @@ app.getDestinationInfo = (location) => {
             const addressComponents = results[0].address_components.filter((component) => {
                 return component.types[0] === 'country';
             });
-            // console.log(addressComponents);
             app.destination.countryCode = addressComponents[0].short_name;
             app.destination.countryName = addressComponents[0].long_name;
             app.destination.lat = results[0].geometry.location.lat();
             app.destination.lng = results[0].geometry.location.lng();
-            // console.log(app.user.countryCode);
             app.getWeather(app.destination.lat, app.destination.lng, app.destination);
             app.getCurrencies(app.user.countryCode, app.destination.countryCode);
             app.getCityCode(app.destination.lat, app.destination.lng);
@@ -183,7 +180,11 @@ app.getAirports = (lat, lng) => {
             'tags': 'Airport',
         }
     }) .then ((res) => {
-        console.log(res);  
+        const airport = res.data.places[0];
+        app.airport.name = res.data.places[0].name;
+        app.airport.description = res.data.places[0].perex;
+        app.airport.photo = res.data.places[0].thumbnail_url;
+        app.displayAirports(app.airport);
     })
 }
 
@@ -196,10 +197,12 @@ app.getLanguage = (country) => {
             fullText: true
         }
     }) .then((res) => {
-        console.log(res[0].languages[0].name);
-        app.destination.languages = res[0].languages[0].name;
-        console.log(res);
-    })
+        app.language.name = res[0].languages[0].name;
+        app.language.nativeName = res[0].languages[0].nativeName;
+        console.log(app.language.name, app.language.nativeName);
+        app.displayLanguage(app.language);
+    });
+
 }
 
 
@@ -300,6 +303,24 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
     });
 }
 
+
+
+app.displayLanguage = (object) => {
+    console.log(object.name, object.nativeName);
+    const title = `<h1>Primary Language</h1>`;
+    const name = `<h2>${object.name}</h2>`;
+    const nativeName = `<h2>${object.nativeName}</h2>`;
+    $('#language').append(title, name, nativeName)
+}
+
+app.displayAirports = (object) => {
+    const title = `<h1>Closest Airport</h1>`;
+    const name = `<h2>${object.name}</h2>`;
+    const desc = `<p>${object.description}</p>`;
+    const photo = `<img src="${object.photo}"/>`;
+    $('#airport').append(title, name, photo, desc);
+}
+
 app.displayRestaurants = (array) => {
     const title = `<h1>Restaurants</h1>`;
     $('#restaurants').append(title);
@@ -357,10 +378,15 @@ app.events = () => {
         $('#destination').val('');
         app.user = {};
         app.destination = {};
+        
+        // display info
+        app.weather = {};
         app.currency= {};
         app.POIs = [];
         app.exchangeRate;
         app.restaurants = [];
+        app.airport = {};
+        app.languages = {};
     });
 }
 
