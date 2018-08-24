@@ -11,10 +11,10 @@
 const app = {};
 
 //user info
-app.user = {};
-app.destination = {};
+// app.user = {};
 
 // display info
+app.destination = {};
 app.weather = {};
 app.currency= {};
 app.POIs = [];
@@ -24,6 +24,10 @@ app.airport = {};
 app.language = {};
 
 
+app.weatherIcons = [
+    'clear-day', 'clear-night', 'rain', 'snow', 'sleet', 'wind', 'fog', 'cloudy', 'partly-cloudy-day','partly-cloudy-night'
+]
+
 
 // get user's current location
 // most of the other APIs we are requesting data from accept location info in the form of lat lng coords
@@ -32,27 +36,27 @@ app.initAutocomplete = (id) => {
     new google.maps.places.Autocomplete(document.getElementById(id));
 }
 
-app.getUserInfo = (location, location2) => {
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({
-        'address': location
-    },
-    (results, status) => {
-        if (status == google.maps.GeocoderStatus.OK) {
-            const addressComponents = results[0].address_components.filter((component) => {
-                return component.types[0] === 'country';
-            });
-            app.user.countryCode = addressComponents[0].short_name;
-            app.user.countryName = addressComponents[0].long_name;
-            app.user.lat = results[0].geometry.location.lat();
-            app.user.lng = results[0].geometry.location.lng();
-            app.getDestinationInfo(location2);
+// app.getUserInfo = (location, location2) => {
+//     const geocoder = new google.maps.Geocoder();
+//     geocoder.geocode({
+//         'address': location
+//     },
+//     (results, status) => {
+//         if (status == google.maps.GeocoderStatus.OK) {
+//             const addressComponents = results[0].address_components.filter((component) => {
+//                 return component.types[0] === 'country';
+//             });
+//             app.user.countryCode = addressComponents[0].short_name;
+//             app.user.countryName = addressComponents[0].long_name;
+//             app.user.lat = results[0].geometry.location.lat();
+//             app.user.lng = results[0].geometry.location.lng();
+//             app.getDestinationInfo(location2);
 
-        } else {
-            alert("Something went wrong." + status);
-        }
-    });
-}
+//         } else {
+//             alert("Something went wrong." + status);
+//         }
+//     });
+// }
 
 app.getDestinationInfo = (location) => {
     const geocoder = new google.maps.Geocoder();
@@ -67,8 +71,8 @@ app.getDestinationInfo = (location) => {
             app.destination.countryName = addressComponents[0].long_name;
             app.destination.lat = results[0].geometry.location.lat();
             app.destination.lng = results[0].geometry.location.lng();
-            app.getWeather(app.destination.lat, app.destination.lng, app.destination);
-            app.getCurrencies(app.user.countryCode, app.destination.countryCode);
+            app.getWeather(app.destination.lat, app.destination.lng);
+            app.getCurrency(app.destination.countryCode);
             app.getCityCode(app.destination.lat, app.destination.lng);
             app.getLanguage(app.destination.countryCode);
             app.getRestaurants(app.destination.lat, app.destination.lng);
@@ -94,7 +98,7 @@ app.getCoordinates = (location) => {
     });
 }
 
-app.getWeather = (latitude, longitude, object) => {
+app.getWeather = (latitude, longitude) => {
     $.ajax({
         url: `https://api.darksky.net/forecast/ea2f7a7bab3daacc9f54f177819fa1d3/${latitude},${longitude}`,
         method: 'GET',
@@ -104,15 +108,14 @@ app.getWeather = (latitude, longitude, object) => {
         }
     })
     .then((res) => {
-        object.weatherConditions = res.daily.summary;
-        object.currentTemp = Math.round(res.currently.temperature);
-        object.currentIcon = res.currently.icon;
-        // object.weatherIcon = res.daily.icon;
+        // console.log(res);
+        app.weather.conditions = res.daily.summary;
+        app.weather.currentTemp = Math.round(res.currently.temperature);
+        app.weather.icon = res.daily.icon;
 
         // console.log(object.currentTemp);
         // console.log(object.weatherConditions);
-        app.displayWeather(object);
-        // console.log(res.currently.icon);
+        app.displayWeather(app.weather);
         
     });
 }
@@ -148,12 +151,19 @@ app.getPOIs = (cityCode) => {
         data: {
             'parents': cityCode,
             'level': 'poi',
-            'limit': 4,
+            'limit': 20,
         }
     }).then((res)=> {
         const points = res.data.places;
-        // console.log(res.data.places);
-        points.forEach((point)=> {
+
+        const filteredPoints = points.filter((place)=> {
+            return place.thumbnail_url && place.perex
+        });
+
+        const theFour= filteredPoints.slice(0,4);
+        console.log(theFour);
+    
+        theFour.forEach((point)=> {
             const place = {
                 'name': point.name,
                 'description': point.perex,
@@ -205,7 +215,6 @@ app.getLanguage = (country) => {
 
 }
 
-
 app.getRestaurants = (cityCode) => {
   $.ajax({
         url: `https://api.sygictravelapi.com/1.0/en/places/list`,
@@ -217,9 +226,9 @@ app.getRestaurants = (cityCode) => {
         data: {
             'categories': 'restaurants',
             'tags': 'restaurants',
-            'categories_not': 'discovering|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
+            // 'categories_not': 'discovering|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
             'parents': cityCode,
-            'limit': 100,
+            'limit': 20,
             'levels': 'poi'
         }
    }).then((res) => {
@@ -257,34 +266,49 @@ app.getRestaurants = (cityCode) => {
     });
 }    
 
-app.getCurrencies = (country1, country2) => {
-     $.ajax({
-        url: `https://restcountries.eu/rest/v2/name/${country1}`,
+app.getCurrency = (countryCode) => {
+    $.ajax({
+        url: `https://restcountries.eu/rest/v2/name/${countryCode}`,
         method: 'GET',
         dataType: 'json',
         data: {
             fullText: true
         }
-    }).then((res1) => {
-        $.ajax({
-            url: `https://restcountries.eu/rest/v2/name/${country2}`,
-            method: 'GET',
-            dataType: 'json',
-            data: {
-                fullText: true
-            }
-        }).then((res2)=> {
+    }).then((res) => {
+        app.currency.code = res[0].currencies[0].code;
+        app.currency.symbol = res[0].currencies[0].symbol;
+        app.displayCurrency(app.currency);
+    });
+}    
 
-            // console.log(res1, res2)
-            app.currency.userCurr = res1[0].currencies[0].code;
-            app.currency.destCurr = res2[0].currencies[0].code;
-            // return res1[0].currencies.code;
-        // console.log(res.currencies);
-        app.convertCurrency(app.currency.userCurr, app.currency.destCurr);
-        })
-   // console.log(res1);
-    });    
-}
+// app.getCurrencies = (country1, country2) => {
+//      $.ajax({
+//         url: `https://restcountries.eu/rest/v2/name/${country1}`,
+//         method: 'GET',
+//         dataType: 'json',
+//         data: {
+//             fullText: true
+//         }
+//     }).then((res1) => {
+//         $.ajax({
+//             url: `https://restcountries.eu/rest/v2/name/${country2}`,
+//             method: 'GET',
+//             dataType: 'json',
+//             data: {
+//                 fullText: true
+//             }
+//         }).then((res2)=> {
+
+//             // console.log(res1, res2)
+//             app.currency.userCurr = res1[0].currencies[0].code;
+//             app.currency.destCurr = res2[0].currencies[0].code;
+//             // return res1[0].currencies.code;
+//         // console.log(res.currencies);
+//         app.convertCurrency(app.currency.userCurr, app.currency.destCurr);
+//         })
+//    // console.log(res1);
+//     });    
+// }
 
 app.convertCurrency = (userCurrency, destinationCurrency) => {
     $.ajax({
@@ -334,8 +358,9 @@ app.displayRestaurants = (array) => {
 
 app.displayCurrency = (object) => {
     const title = `<h1>Currency</h1>`;
-    const html = `<h2>The exchange rate from ${object.userCurr} to ${object.destCurr} is ${object.exchangeRate}</h2>`;
-    $('#currency').append(title,html);
+    const html = `<h2>The currency used is ${object.symbol} ${object.code}</h2>`;
+    const input = `<input type="text" id="userCurrency" placeholder="Enter your location to convert.">`;
+    $('#currency').append(title,html, input);
 }
 
 app.displayPOIs = (array) => {
@@ -351,32 +376,48 @@ app.displayPOIs = (array) => {
 
 app.displayWeather = (object) => {
     const title = `<h1>Weather</h1>`;
+    const icon = `<canvas id="${object.icon}" width="128" height="128"></canvas>`;
     const html = `<h2>Current temp: ${object.currentTemp}</h2>
-        <p>${object.weatherConditions}</p>`
-    $('#weather').append(title, html);
+        <p>${object.conditions}</p>`
+    $('#weather').append(title, icon, html);
+    app.loadIcons();
+}
+
+app.loadIcons = () => {
+    var icons = new Skycons({"color": "black"});
+    icons.set("clear-day", Skycons.CLEAR_DAY);
+    icons.set("clear-night", Skycons.CLEAR_NIGHT);
+    icons.set("partly-cloudy-day", Skycons.PARTLY_CLOUDY_DAY);
+    icons.set("partly-cloudy-night", Skycons.PARTLY_CLOUDY_NIGHT);
+    icons.set("cloudy", Skycons.CLOUDY);
+    icons.set("rain", Skycons.RAIN);
+    icons.set("sleet", Skycons.SLEET);
+    icons.set("snow", Skycons.SNOW);
+    icons.set("wind", Skycons.WIND);
+    icons.set("fog", Skycons.FOG);
+    icons.play();
 }
 
 app.events = () => {
-    app.initAutocomplete('user');
+    // app.initAutocomplete('user');
     app.initAutocomplete('destination');
     $('form').on('submit', (e) => {
         e.preventDefault();
         $('div').empty();
-        const user = $('#user').val();
+        // const user = $('#user').val();
         const destination = $('#destination').val();
-        $('#test span').text(user);
-        if (user.length > 0 && destination.length > 0) {
-            app.getUserInfo(user, destination);
-            setTimeout(()=> {
-                console.log('userinfo', app.user);
-                console.log('destinationinfo', app.destination);
-                console.log('points of interest', app.POIs);
-                console.log('exchange-rate', app.exchangeRate);
-            }, 500);
+        if (destination.length > 0) {
+            app.getDestinationInfo(destination);
+            // setTimeout(()=> {
+            //     console.log('userinfo', app.user);
+            //     console.log('destinationinfo', app.destination);
+            //     console.log('points of interest', app.POIs);
+            //     console.log('exchange-rate', app.exchangeRate);
+            // }, 500);
         }
-        $('#user').val('');
+        // $('#user').val('');
         $('#destination').val('');
-        app.user = {};
+        // app.user = {};
         app.destination = {};
         
         // display info
