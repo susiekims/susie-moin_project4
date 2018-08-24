@@ -5,10 +5,57 @@ body {
 	font-size: 62.5%;
 }
 
-.container {
+img {
+	max-width: 200px;
+}
+
+header {
 	width: 100%;
-	display: flex;
-	flex-wrap: wrap;
+	height: 25px;
+}
+
+
+.container {
+	width: 100vw;
+	height: calc(100vh - 25px);
+	display: grid;
+	grid-template-areas: 
+	"poi poi weather currency"
+	"poi poi tours tours"
+	"language airport tours tours";
+	grid-template-columns: 25% 25% 25% 25%;
+	grid-template-rows: 33% 33% 33%;
+}
+
+
+#poi {
+	grid-area: poi;
+	background: red;
+}
+
+#weather {
+	grid-area: weather;
+	background: yellow;
+}
+
+#currency{
+	grid-area: currency;
+	background: blue;
+}
+
+#tours{
+	grid-area: tours;
+	background: green;
+}
+
+#language {
+	grid-area: language;
+	background: PURPLE;
+}
+
+#airport{
+	grid-area: airport;
+	background: BROWN;
 }
 
 input[type=search] {
@@ -16,7 +63,17 @@ input[type=search] {
 }
 
 .container div {
-	width: 400px;
 	// height: 300px;
 	border: 1px solid black;
+	background: yellow;
+}
+
+@media (max-width: 800px) {
+	grid-template-areas: 
+	"poi poi"
+	"poi poi" 
+	"weather currency"
+	"language airport" 
+	"tours tours"
+	"tours tours";
 }

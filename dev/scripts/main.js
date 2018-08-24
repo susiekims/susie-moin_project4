@@ -1,34 +1,16 @@
-// get user's current location
-// get location user wants to travel to
-// pass user location into Google maps geocoder to get lat and lng coords
-// pass user desired location into Google geocoder to get lat and lng coords
-// pass city info and call weather API and get current weather
-// pass city info and call zomato API and get top 3 random restaurants 
-// pass city info into 
-
-
 // create empty object to store all methods
 const app = {};
 
-//user info
+// create empty objects/arrays on app object to store the information to be used later on
 app.user = {};
-
-// display info
 app.destination = {};
 app.weather = {};
 app.currency= {};
 app.POIs = [];
 app.exchangeRate;
-// app.restaurants = [];
 app.tours = [];
 app.airport = {};
 app.language = {};
-
-
-app.weatherIcons = [
-    'clear-day', 'clear-night', 'rain', 'snow', 'sleet', 'wind', 'fog', 'cloudy', 'partly-cloudy-day','partly-cloudy-night'
-]
-
 
 // get user's current location
 // most of the other APIs we are requesting data from accept location info in the form of lat lng coords
@@ -52,16 +34,8 @@ app.getDestinationInfo = (location) => {
             app.destination.lng = results[0].geometry.location.lng();
             app.getWeather(app.destination.lat, app.destination.lng);
             app.getCurrency(app.destination.countryCode);
-
-            if (location === 'Hong Kong') {
-                app.getPOIs('city:389');
-                app.getRestaurants('city:389');
-            } 
-            else {
-                app.getCityCode(app.destination.lat, app.destination.lng);
-            }
+            app.getCityCode(app.destination.lat, app.destination.lng);
             app.getLanguage(app.destination.countryCode);
-            // app.getRestaurants(app.destination.lat, app.destination.lng);
             app.getAirports(app.destination.lat, app.destination.lng);
         } else {
             alert("Something went wrong." + status);
@@ -94,13 +68,9 @@ app.getWeather = (latitude, longitude) => {
         }
     })
     .then((res) => {
-        // console.log(res);
         app.weather.conditions = res.daily.summary;
         app.weather.currentTemp = Math.round(res.currently.temperature);
         app.weather.icon = res.daily.icon;
-
-        // console.log(object.currentTemp);
-        // console.log(object.weatherConditions);
         app.displayWeather(app.weather);
         
     });
@@ -123,7 +93,7 @@ app.getCityCode = (latitude, longitude) => {
         const data = res.data.places[0];
         console.log(data);
 
-        if (data.level !== 'city' ) {
+        if (data.level !== 'city') {
             const cityCode = data.parent_ids[0];
             console.log(data.parent_ids[0]);
             console.log(cityCode);
@@ -131,16 +101,9 @@ app.getCityCode = (latitude, longitude) => {
             app.getTours(cityCode);
         } else {
             const cityCode = data.id;  
-            // app.getPOIs(app.destination.cityCode);
-            // app.getRestaurants(app.destination.cityCode);
             app.getPOIs(cityCode);
             app.getTours(cityCode);
         } 
-
-        // console.log(app.destination.cityCode);
-        // app.destination.cityCode = data.id;  
-        // app.getPOIs(app.destination.cityCode);
-        // app.getRestaurants(app.destination.cityCode);
     });
 }
 
@@ -163,23 +126,23 @@ app.getPOIs = (cityCode) => {
         const filteredPoints = points.filter((place)=> {
             return place.thumbnail_url && place.perex
         });
-
-        const theFour= filteredPoints.slice(0,3);
-        console.log(theFour);
-    
-        theFour.forEach((point)=> {
-            const place = {
-                'name': point.name,
-                'description': point.perex,
-                'photo': point.thumbnail_url,
-            };
-            app.POIs.push(place);
-        });
-        app.displayPOIs(app.POIs);
-
+        if (filteredPoints.length === 0) {
+            app.displayError('tours', 'tours');
+        } else {
+            const theFour= filteredPoints.slice(0,3);
+            console.log(theFour);
+            theFour.forEach((point)=> {
+                const place = {
+                    'name': point.name,
+                    'description': point.perex,
+                    'photo': point.thumbnail_url,
+                };
+                app.POIs.push(place);
+            });
+            app.displayPOIs(app.POIs);
+        }
     });
 }
-
 
 app.getAirports = (lat, lng) => {
     $.ajax({
@@ -228,80 +191,31 @@ app.getTours = (cityCode) => {
             'x-api-key': 'zziJYcjlmE8LbWHdvU5vC8UcSFvKEPsC3nkAl7eK'
         },
         data: {
-            // 'categories': 'restaurants',
-            // 'tags': 'restaurants',
-            // 'categories_not': 'discovering|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
-            // 'parents': cityCode,
-            // 'limit': 20,
-            // 'levels': 'poi'
             'parent_place_id': cityCode
         }
    }).then((res) => {
         console.log(res);
-        const tours = res.data.tours;
+        const list = res.data.tours;
         console.log(tours);
-
-        for (let i = 0; i < 3; i ++) {
-            const tour = {
-                name: tours[i].title,
-                photo: tours[i].photo_url,
-                url: tours[i].url
-            };
-            app.tours.push(tour);
+        const tours = list.filter((place)=> {
+            return place.photo_url && place.url
+        });
+        if (tours.length === 0) {
+            app.displayError('tours', 'tours');
+        } else {
+            for (let i = 0; i < 3; i ++) {
+                const tour = {
+                    name: tours[i].title,
+                    photo: tours[i].photo_url,
+                    url: tours[i].url
+                };
+                app.tours.push(tour);
+            }
+            console.log(app.tours);
+            app.displayTours(app.tours);
         }
-        console.log(app.tours);
-        app.displayTours(app.tours);
     });
 }
-
-
-app.getRestaurants = (cityCode) => {
-  $.ajax({
-        url: `https://api.sygictravelapi.com/1.0/en/places/list`,
-        method: 'GET',
-        dataType: 'json',
-        headers: {
-            'x-api-key': 'zziJYcjlmE8LbWHdvU5vC8UcSFvKEPsC3nkAl7eK'
-        },
-        data: {
-            'categories': 'restaurants',
-            'tags': 'restaurants',
-            'categories_not': 'discovering|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
-            'parents': cityCode,
-            'limit': 20,
-            'levels': 'poi'
-        }
-   }).then((res) => {
-        const restaurantList = res.data.places;
-        console.log(restaurantList);
-        const filteredRestaurants = restaurantList.filter((place)=> {
-            return place.thumbnail_url && place.perex
-        });
-
-        console.log(filteredRestaurants);
-
-        if (filteredRestaurants.length === 0) {
-            app.displayError('restaurants', 'places to eat');
-        } else {
-            const theFour = filteredRestaurants.slice(0,3);
-            // console.log(theFour);
-    
-            // if there are no restautanrs that have image and desc,
-            // tell user 'sorry, we ont have a lot of info, but check out these restaurants:
-            theFour.forEach((restaurant) => {
-                const item = {
-                    'name': restaurant.name,
-                    'description': restaurant.perex,
-                    'photo': restaurant.thumbnail_url
-                }
-                app.restaurants.push(item);
-            });
-            console.log(app.restaurants);
-            app.displayRestaurants(app.restaurants);
-        }
-        // console.log(filteredRestaurants);
-    });
-}    
 
 app.getCurrency = (countryCode) => {
     $.ajax({
@@ -315,38 +229,8 @@ app.getCurrency = (countryCode) => {
         app.currency.code = res[0].currencies[0].code;
         app.currency.symbol = res[0].currencies[0].symbol;
         app.displayCurrency(app.currency);
-
     });
 }    
-
-// app.getCurrencies = (country1, country2) => {
-//      $.ajax({
-//         url: `https://restcountries.eu/rest/v2/name/${country1}`,
-//         method: 'GET',
-//         dataType: 'json',
-//         data: {
-//             fullText: true
-//         }
-//     }).then((res1) => {
-//         $.ajax({
-//             url: `https://restcountries.eu/rest/v2/name/${country2}`,
-//             method: 'GET',
-//             dataType: 'json',
-//             data: {
-//                 fullText: true
-//             }
-//         }).then((res2)=> {
-
-//             // console.log(res1, res2)
-//             app.currency.userCurr = res1[0].currencies[0].code;
-//             app.currency.destCurr = res2[0].currencies[0].code;
-//             // return res1[0].currencies.code;
-//         // console.log(res.currencies);
-//         app.convertCurrency(app.currency.userCurr, app.currency.destCurr);
-//         })
-//    // console.log(res1);
-//     });    
-// }
 
 app.convertCurrency = (userCurrency, destinationCurrency) => {
     $.ajax({
@@ -366,8 +250,6 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
 
     });
 }
-
-
 
 app.displayError = (divID, topic) => {
     const title = `<h1>${topic}</h1>`;
@@ -459,7 +341,6 @@ app.getUserCurrency = (countryCode) => {
         }
     }).then((res) => {
         app.user.code = res[0].currencies[0].code;
-        // app.user.symbol = res[0].currencies[0].symbol;
         console.log(app.user.code);
         app.convertCurrency(app.user.code, app.currency.code);
     });
@@ -467,12 +348,12 @@ app.getUserCurrency = (countryCode) => {
 
 app.displayPOIs = (array) => {
     const title = `<h1>Points of Interest</h1>`;
-    $('#POI').append(title);
+    $('#poi').append(title);
     array.forEach((item) => {
         const name = `<h2>${item.name}<h2>`;
         const desc = `<p>${item.description}</p>`;
         const photo = `<img src="${item.photo}">`;
-        $('#POI').append(name, photo, desc);
+        $('#poi').append(name, photo, desc);
     });
 }
 
@@ -501,33 +382,21 @@ app.loadIcons = () => {
 }
 
 app.events = () => {
-    // app.initAutocomplete('user');
     app.initAutocomplete('destination');
     $('form').on('submit', (e) => {
         e.preventDefault();
         $('div').empty();
-        // const user = $('#user').val();
         const destination = $('#destination').val();
         if (destination.length > 0) {
             app.getDestinationInfo(destination);
-            // setTimeout(()=> {
-            //     console.log('userinfo', app.user);
-            //     console.log('destinationinfo', app.destination);
-            //     console.log('points of interest', app.POIs);
-            //     console.log('exchange-rate', app.exchangeRate);
-            // }, 500);
         }
-        // $('#user').val('');
         $('#destination').val('');
-        // app.user = {};
         app.destination = {};
-        
-        // display info
         app.weather = {};
         app.currency= {};
         app.POIs = [];
         app.exchangeRate;
-        app.restaurants = [];
+        app.tours = [];
         app.airport = {};
         app.languages = {};
     });
