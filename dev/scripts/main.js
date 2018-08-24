@@ -11,7 +11,7 @@
 const app = {};
 
 //user info
-// app.user = {};
+app.user = {};
 
 // display info
 app.destination = {};
@@ -278,6 +278,7 @@ app.getCurrency = (countryCode) => {
         app.currency.code = res[0].currencies[0].code;
         app.currency.symbol = res[0].currencies[0].symbol;
         app.displayCurrency(app.currency);
+
     });
 }    
 
@@ -320,10 +321,12 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
             compact: 'ultra'
         }
     }).then((res) => {
-        // console.log(res);
+        console.log(res);
         app.currency.exchangeRate = res[`${userCurrency}_${destinationCurrency}`];
         console.log(app.currency.exchangeRate);
-        app.displayCurrency(app.currency);
+
+        $('#currency').append(`<h2>The conversion rate is ${app.currency.exchangeRate.toFixed(2)}</h2>`)
+
     });
 }
 
@@ -359,8 +362,53 @@ app.displayRestaurants = (array) => {
 app.displayCurrency = (object) => {
     const title = `<h1>Currency</h1>`;
     const html = `<h2>The currency used is ${object.symbol} ${object.code}</h2>`;
-    const input = `<input type="text" id="userCurrency" placeholder="Enter your location to convert.">`;
+    const input = `<form id="userCurrency"><input type="text" id="user" placeholder="Enter your location to convert."><input type="submit"></form>`;
     $('#currency').append(title,html, input);
+    app.getUserInfo();
+}
+
+app.getUserInfo = () => {
+    app.initAutocomplete('user');
+    $('#userCurrency').on('submit', function(e) {
+        e.preventDefault();
+        const userLocation = $('#user').val();
+        app.getUserLocation(userLocation);
+    });
+}
+
+app.getUserLocation = (location) => {
+    new google.maps.places.Autocomplete(document.getElementById('user'));
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({
+        'address': location
+    }, (results, status) => {
+        if (status == google.maps.GeocoderStatus.OK) {
+            const addressComponents = results[0].address_components.filter((component) => {
+                return component.types[0] === 'country';
+            });
+            app.user.countryCode = addressComponents[0].short_name;
+            console.log(app.user.countryCode);
+        } else {
+            alert('Sorry, something went wrong.' + status)
+        }
+    app.getUserCurrency(app.user.countryCode);
+    });    
+}
+
+app.getUserCurrency = (countryCode) => {
+    $.ajax({
+        url: `https://restcountries.eu/rest/v2/name/${countryCode}`,
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            fullText: true
+        }
+    }).then((res) => {
+        app.user.code = res[0].currencies[0].code;
+        // app.user.symbol = res[0].currencies[0].symbol;
+        console.log(app.user.code);
+        app.convertCurrency(app.user.code, app.currency.code);
+    });
 }
 
 app.displayPOIs = (array) => {
