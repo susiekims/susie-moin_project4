@@ -19,7 +19,8 @@ app.weather = {};
 app.currency= {};
 app.POIs = [];
 app.exchangeRate;
-app.restaurants = [];
+// app.restaurants = [];
+app.tours = [];
 app.airport = {};
 app.language = {};
 
@@ -36,28 +37,6 @@ app.initAutocomplete = (id) => {
     new google.maps.places.Autocomplete(document.getElementById(id));
 }
 
-// app.getUserInfo = (location, location2) => {
-//     const geocoder = new google.maps.Geocoder();
-//     geocoder.geocode({
-//         'address': location
-//     },
-//     (results, status) => {
-//         if (status == google.maps.GeocoderStatus.OK) {
-//             const addressComponents = results[0].address_components.filter((component) => {
-//                 return component.types[0] === 'country';
-//             });
-//             app.user.countryCode = addressComponents[0].short_name;
-//             app.user.countryName = addressComponents[0].long_name;
-//             app.user.lat = results[0].geometry.location.lat();
-//             app.user.lng = results[0].geometry.location.lng();
-//             app.getDestinationInfo(location2);
-
-//         } else {
-//             alert("Something went wrong." + status);
-//         }
-//     });
-// }
-
 app.getDestinationInfo = (location) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({
@@ -73,9 +52,16 @@ app.getDestinationInfo = (location) => {
             app.destination.lng = results[0].geometry.location.lng();
             app.getWeather(app.destination.lat, app.destination.lng);
             app.getCurrency(app.destination.countryCode);
-            app.getCityCode(app.destination.lat, app.destination.lng);
+
+            if (location === 'Hong Kong') {
+                app.getPOIs('city:389');
+                app.getRestaurants('city:389');
+            } 
+            else {
+                app.getCityCode(app.destination.lat, app.destination.lng);
+            }
             app.getLanguage(app.destination.countryCode);
-            app.getRestaurants(app.destination.lat, app.destination.lng);
+            // app.getRestaurants(app.destination.lat, app.destination.lng);
             app.getAirports(app.destination.lat, app.destination.lng);
         } else {
             alert("Something went wrong." + status);
@@ -133,10 +119,28 @@ app.getCityCode = (latitude, longitude) => {
         }
     })
     .then((res) => {
+        console.log(res);
         const data = res.data.places[0];
-        app.destination.cityCode = data.id;
-        app.getPOIs(app.destination.cityCode);
-        app.getRestaurants(app.destination.cityCode);
+        console.log(data);
+
+        if (data.level !== 'city' ) {
+            const cityCode = data.parent_ids[0];
+            console.log(data.parent_ids[0]);
+            console.log(cityCode);
+            app.getPOIs(cityCode);
+            app.getTours(cityCode);
+        } else {
+            const cityCode = data.id;  
+            // app.getPOIs(app.destination.cityCode);
+            // app.getRestaurants(app.destination.cityCode);
+            app.getPOIs(cityCode);
+            app.getTours(cityCode);
+        } 
+
+        // console.log(app.destination.cityCode);
+        // app.destination.cityCode = data.id;  
+        // app.getPOIs(app.destination.cityCode);
+        // app.getRestaurants(app.destination.cityCode);
     });
 }
 
@@ -160,7 +164,7 @@ app.getPOIs = (cityCode) => {
             return place.thumbnail_url && place.perex
         });
 
-        const theFour= filteredPoints.slice(0,4);
+        const theFour= filteredPoints.slice(0,3);
         console.log(theFour);
     
         theFour.forEach((point)=> {
@@ -190,12 +194,11 @@ app.getAirports = (lat, lng) => {
             'tags': 'Airport',
         }
     }) .then ((res) => {
-        const airport = res.data.places[0];
         app.airport.name = res.data.places[0].name;
         app.airport.description = res.data.places[0].perex;
         app.airport.photo = res.data.places[0].thumbnail_url;
         app.displayAirports(app.airport);
-    })
+    });
 }
 
 app.getLanguage = (country) => {
@@ -207,6 +210,7 @@ app.getLanguage = (country) => {
             fullText: true
         }
     }) .then((res) => {
+        console.log(res);
         app.language.name = res[0].languages[0].name;
         app.language.nativeName = res[0].languages[0].nativeName;
         console.log(app.language.name, app.language.nativeName);
@@ -214,6 +218,42 @@ app.getLanguage = (country) => {
     });
 
 }
+
+app.getTours = (cityCode) => {
+    $.ajax({
+        url: `https://api.sygictravelapi.com/1.0/en/tours/viator`,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'x-api-key': 'zziJYcjlmE8LbWHdvU5vC8UcSFvKEPsC3nkAl7eK'
+        },
+        data: {
+            // 'categories': 'restaurants',
+            // 'tags': 'restaurants',
+            // 'categories_not': 'discovering|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
+            // 'parents': cityCode,
+            // 'limit': 20,
+            // 'levels': 'poi'
+            'parent_place_id': cityCode
+        }
+   }).then((res) => {
+        console.log(res);
+        const tours = res.data.tours;
+        console.log(tours);
+
+        for (let i = 0; i < 3; i ++) {
+            const tour = {
+                name: tours[i].title,
+                photo: tours[i].photo_url,
+                url: tours[i].url
+            };
+            app.tours.push(tour);
+        }
+        console.log(app.tours);
+        app.displayTours(app.tours);
+    });
+}
+
 
 app.getRestaurants = (cityCode) => {
   $.ajax({
@@ -226,7 +266,7 @@ app.getRestaurants = (cityCode) => {
         data: {
             'categories': 'restaurants',
             'tags': 'restaurants',
-            // 'categories_not': 'discovering|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
+            'categories_not': 'discovering|hiking|playing|relaxing|shopping|sightseeing|sleeping|doing_sports|traveling',
             'parents': cityCode,
             'limit': 20,
             'levels': 'poi'
@@ -239,30 +279,27 @@ app.getRestaurants = (cityCode) => {
         });
 
         console.log(filteredRestaurants);
-        const theFour= filteredRestaurants.slice(0,4);
-        console.log(theFour);
-       
 
-        // if there are no restautanrs that have image and desc,
-        // tell user 'sorry, we ont have a lot of info, but check out these restaurants:
-        //
-        theFour.forEach((restaurant) => {
-            const item = {
-                'name': restaurant.name,
-                'description': restaurant.perex,
-                'photo': restaurant.thumbnail_url
-            }
-
-            // This doesn't work, fix later
-            if (restaurant.perex === null) {
-                item.description = 'No description available.'
-            } else if (restaurant.thumbnail_url === null) {
-                item.photo = "No photo available."
-            }
-            app.restaurants.push(item);
-        });
-        console.log(app.restaurants);
-        app.displayRestaurants(app.restaurants);
+        if (filteredRestaurants.length === 0) {
+            app.displayError('restaurants', 'places to eat');
+        } else {
+            const theFour = filteredRestaurants.slice(0,3);
+            // console.log(theFour);
+    
+            // if there are no restautanrs that have image and desc,
+            // tell user 'sorry, we ont have a lot of info, but check out these restaurants:
+            theFour.forEach((restaurant) => {
+                const item = {
+                    'name': restaurant.name,
+                    'description': restaurant.perex,
+                    'photo': restaurant.thumbnail_url
+                }
+                app.restaurants.push(item);
+            });
+            console.log(app.restaurants);
+            app.displayRestaurants(app.restaurants);
+        }
+        // console.log(filteredRestaurants);
     });
 }    
 
@@ -332,6 +369,12 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
 
 
 
+app.displayError = (divID, topic) => {
+    const title = `<h1>${topic}</h1>`;
+    console.log('error');
+    $(`#${divID}`).append(title, `<h2>Sorry, we don't have detailed information about ${topic} in this area. Try your search again in a nearby city or related area.</h2>`);
+}
+
 app.displayLanguage = (object) => {
     console.log(object.name, object.nativeName);
     const title = `<h1>Primary Language</h1>`;
@@ -356,6 +399,17 @@ app.displayRestaurants = (array) => {
         const desc = `<p>${item.description}</p>`;
         const photo = `<img src="${item.photo}">`;
         $('#restaurants').append(name, photo, desc);
+    });
+}
+
+app.displayTours = (array) => {
+    const title = `<h1>Top Tours</h1>`;
+    $('#tours').append(title);
+    array.forEach((item) => {
+        const name = `<h2>${item.name}<h2>`;
+        const photo = `<img src="${item.photo}">`;
+        const link = `<a href="${item.url}">Book Now</a>`;
+        $('#tours').append(name, photo, link);
     });
 }
 
