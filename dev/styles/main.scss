@@ -5,6 +5,7 @@ body {
 	font-size: 62.5%;
 }
 
+// i just added this code to see what im working with you'll want to taret the images with classes 
 img {
 	max-width: 200px;
 }
@@ -68,12 +69,34 @@ input[type=search] {
 	background: yellow;
 }
 
-@media (max-width: 800px) {
-	grid-template-areas: 
-	"poi poi"
-	"poi poi" 
-	"weather currency"
-	"language airport" 
-	"tours tours"
-	"tours tours";
+@media (max-width: 600px) {
+	.container {
+		grid-template-areas: 
+			"poi poi"
+			"poi poi" 
+			"weather currency"
+			"tours tours"
+			"tours tours"
+			"language airport" ;
+		grid-template-columns: 50% 50%;
+		grid-template-rows: repeat(6, 33vh);
+	}	
+}
+
+@media (max-width: 350px) {
+	.container {
+		grid-template-areas: 
+			"poi" 
+			"poi"
+			"poi" 
+			"weather" 
+			"currency"
+			"tours" 
+			"tours"
+			"tours"
+			"language" 
+			"airport" ;
+		grid-template-columns: 100%;
+		grid-template-rows: repeat(10, 350px);
+	}	
 }
