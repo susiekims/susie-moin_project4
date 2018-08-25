@@ -3,10 +3,14 @@
 body {
 	color: black;
 	font-size: 62.5%;
+	font-family: "Work Sans", sans-serif;
+	// background: #f6f6f6;
 }
 
+@import 'splash';
+
 // i just added this code to see what im working with you'll want to taret the images with classes 
-img {
+.content img {
 	max-width: 200px;
 }
 
@@ -31,32 +35,34 @@ header {
 
 #poi {
 	grid-area: poi;
-	background: red;
+	// background: red;
+	overflow-y: scroll;
 }
 
 #weather {
 	grid-area: weather;
-	background: yellow;
+	// background: yellow;
 }
 
 #currency{
 	grid-area: currency;
-	background: blue;
+	// background: blue;
 }
 
 #tours{
 	grid-area: tours;
-	background: green;
+	// background: green;
+	overflow-y: scroll;
 }
 
 #language {
 	grid-area: language;
-	background: PURPLE;
+	// background: PURPLE;
 }
 
 #airport{
 	grid-area: airport;
-	background: BROWN;
+	// background: BROWN;
 }
 
 input[type=search] {
@@ -64,10 +70,37 @@ input[type=search] {
 }
 
 .container div {
-	// height: 300px;
 	border: 1px solid black;
-	background: yellow;
+	// background: #f6f6f6;
+	padding: 20px;
 }
+
+.contentSearchForm {
+	position: absolute;
+	background: none;
+	right: 0;
+	top: 0;
+	transform: none;
+}
+
+.contentSearchBar {
+	font-size: 0.8rem;
+	color: black;
+	border: 1px solid black;
+}
+
+@media (max-width: 900px) {
+	.container {
+		grid-template-areas: 
+			"poi poi weather"
+			"poi poi currency" 
+			"airport tours tours"
+			"language tours tours";
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: 45% 45% 45% 45%;
+	}	
+}
+
 
 @media (max-width: 600px) {
 	.container {
