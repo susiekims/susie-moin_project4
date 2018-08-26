@@ -254,7 +254,7 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
         app.currency.exchangeRate = res[`${userCurrency}_${destinationCurrency}`];
         console.log(app.currency.exchangeRate);
 
-        $('#currency').append(`<h2>The conversion rate is ${app.currency.exchangeRate.toFixed(2)}</h2>`)
+        $('#currency').append(`<h2>$1 ${userCurrency} = ${app.currency.symbol} ${app.currency.exchangeRate.toFixed(2)} ${destinationCurrency}</h2>`)
 
     });
 }
@@ -269,7 +269,7 @@ app.displayError = (divID, topic) => {
 app.displayCurrency = (object) => {
     const title = `<h3>Currency</h3>`;
     const html = `<h2>The currency used is ${object.symbol} ${object.code}</h2>`;
-    const input = `<form id="userCurrency"><input type="text" id="user" placeholder="Enter your location to convert."><input type="submit"></form>`;
+    const input = `<form id="userCurrency"><input class="userCurrency  type="search" id="user" placeholder="Enter your location."></form>`;
     $('#currency').append(title,html, input);
     app.getUserInfo();
 }
@@ -331,10 +331,10 @@ app.displayLanguage = (object) => {
 
 app.displayAirports = (object) => {
     const title = `<h3>Closest Airport</h3>`;
-    const name = `<h2>${object.name}</h2>`;
-    const desc = `<p>${object.description}</p>`;
-    const photo = `<img src="${object.photo}"/>`;
-    $('#airport').append(title, name, photo, desc);
+    const name = `<h4>${object.name}</h4>`;
+    // const desc = `<p>${object.description}</p>`;
+    // const photo = `<img src="${object.photo}"/>`;
+    $('#airport').append(title, name);
 }
 
 // method to display tours
@@ -350,12 +350,14 @@ app.displayTours = (array) => {
         let counter = 0;
         let resultsPerPage = 3;
         for (let i = counter; i < resultsPerPage; i++) {
-            const tourDiv = $('<div>');
+            const div = $('<div class="clearfix hvr-shadow">');
             const name = `<h2>${array[i].name}<h2>`
-            const photo = `<img src="${array[i].photo}">`;
+            const photo = `<img class="hvr-grow-shadow" src="${array[i].photo}">`;
             const link = `<a href="${array.url}">Book Now</a>`;
-            tourDiv.append(name, photo, link);
-            $('#tours').append(tourDiv);
+
+            const text = $(`<div>`).append(name, link);
+            div.append(photo, text);
+            $('#tours').append(div);
         }    
 
         const loadMore = `<button class='loadMore'>Load More</button>`;
@@ -364,12 +366,14 @@ app.displayTours = (array) => {
             this.remove();
             counter+=3;
             for (let i = counter; i < (counter + resultsPerPage); i++) {
-                const tourDiv = $('<div>');
+                const div = $('<div class="clearfix hvr-shadow">');
                 const name = `<h2>${array[i].name}<h2>`
-                const photo = `<img src="${array[i].photo}">`;
+                const photo = `<img class="hvr-grow-shadow"  src="${array[i].photo}">`;
                 const link = `<a href="${array.url}">Book Now</a>`;
-                tourDiv.append(name, photo, link);
-                $('#tours').append(tourDiv);
+                
+                const text = $(`<div>`).append(name, link);
+                div.append(photo, text);
+                $('#tours').append(div);
             }
             $('#tours').append(loadMore);
         });
@@ -377,12 +381,13 @@ app.displayTours = (array) => {
         // if screen width is not less than 600px, append elements normally
 	} else {
         array.forEach((item) => {
-            const tourDiv = $('<div>');
+            const div = $('<div class="clearfix hvr-shadow">');
             const name = `<h2>${item.name}<h2>`;
-            const photo = `<img src="${item.photo}">`;
+            const photo = `<img class="hvr-grow-shadow" src="${item.photo}">`;
             const link = `<a href="${item.url}">Book Now</a>`;
-            tourDiv.append(name, photo, link);
-            $('#tours').append(tourDiv);
+            const text = $('<div>').append(name, link);
+            div.append(photo, text);
+            $('#tours').append(div);
         });
     }
 }
@@ -396,12 +401,14 @@ app.displayPOIs = (array) => {
         let counter = 0;
         let resultsPerPage = 3;
         for (let i = counter; i < resultsPerPage; i++) {
-            const poiDiv = $('<div>');
+            const div = $(`<div class="clearfix hvr-shadow">`);
             const name = `<h2>${array[i].name}<h2>`;
             const desc = `<p>${array[i].description}</p>`;
-            const photo = `<img src="${array[i].photo}">`;
-            poiDiv.append(name, photo, desc);
-            $('#poi').append(poiDiv);
+            const photo = `<img class="hvr-grow-shadow" src="${array[i].photo}">`;
+            const text = $('<div>').append(name, desc);
+
+            div.append(photo, text);
+            $('#poi').append(div);
         }    
 
         const loadMore = `<button class='loadMore'>Load More</button>`;
@@ -411,32 +418,36 @@ app.displayPOIs = (array) => {
             this.remove();
             counter+=3;
             for (let i = counter; i < (counter + resultsPerPage); i++) {
-                const poiDiv = $('<div>');
+                const div = $(`<div class="clearfix hvr-shadow">`);
                 const name = `<h2>${array[i].name}<h2>`;
                 const desc = `<p>${array[i].description}</p>`;
-                const photo = `<img src="${array[i].photo}">`;
-                poiDiv.append(name, photo, desc);
-                $('#poi').append(poiDiv);
+                const photo = `<img class="hvr-grow-shadow" src="${array[i].photo}">`;
+                const text = $('<div>').append(name, desc);
+    
+                div.append(photo, text);
+                $('#poi').append(div);
             }
             $('#poi').append(loadMore);
         });
         // else just append all the results normally
 	} else {    
         array.forEach((item) => {
-            const poiDiv = $('<div>');
+            const div = $(`<div class="clearfix hvr-shadow">`);
             const name = `<h2>${item.name}<h2>`;
             const desc = `<p>${item.description}</p>`;
-            const photo = `<img src="${item.photo}">`;
-            poiDiv.append(name, photo, desc);
-            $('#poi').append(poiDiv);
+            const photo = `<img class="hvr-grow-shadow" src="${item.photo}">`;
+            const text = $('<div>').append(name, desc);
+            div.append(photo, text);
+            $('#poi').append(div);
         });
     }    
 }
 
 app.displayWeather = (object) => {
     const title = `<h3>Weather</h3>`;
-    const icon = `<canvas id="${object.icon}" width="128" height="128"></canvas>`;
-    const html = `<h4>Current temp: ${object.currentTemp}</h4>
+    const icon = `<canvas id="${object.icon}" width="80" height="80"></canvas>`;
+    const html = `<h2>Currently:</h2> 
+    <h4>${object.currentTemp}</h4>
         <p class="weatherText">${object.conditions}</p>`
     $('#weather').append(title, icon, html);
     app.loadIcons();
@@ -446,7 +457,9 @@ app.randomHero = () => {
     let i = Math.floor(Math.random() * 5) + 1
     console.log(i);
     $('.splashPage').css({
-        'background': `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../../public/assets/hero${i}.jpg")`
+        'background': `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../../public/assets/hero${i}.jpg")`,
+        'background-position': 'center',
+	    'background-size': 'cover'	
     });
 }
 
@@ -478,6 +491,7 @@ app.events = () => {
         $('div').empty();
         const destination = $('#destination').val();
         if (destination.length > 0) {
+            $('#destinationName').text(destination);
             app.getDestinationInfo(destination);
         }
         $('#destination').val('');
@@ -494,12 +508,12 @@ app.events = () => {
 
 app.init = () => {
     app.randomHero();
+    app.initAutocomplete('destination');
+    $('#contentPage').toggle(false);
     app.events();
 }
 
 $(function () {
-    app.initAutocomplete('destination');
-    $('#contentPage').toggle(false);
     console.log("ready!");
     app.init();
 });

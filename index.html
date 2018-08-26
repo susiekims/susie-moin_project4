@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="public/styles/style.css">
     <title>GetGo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.5.2/animate.min.css">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700,900" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 </head>
@@ -18,27 +19,21 @@
 
     <section class="contentPage" id="contentPage">
         <header>
-            <!-- <form>
-                <input type="search" placeholder="where do you want to go?" class="autocomplete" id="destination">
-                <input type="submit">
-            </form> -->
-            
-            
+            <h4 class="animated fadeInLeft hvr-icon-float-away"><span id="logo">GetGo</span> <i class="fas fa-plane hvr-icon"></i></h4>
+            <h1 id="destinationName"></h1>
         </header>
         <section class="container">
-            <div class="content" id="currency"></div>
+            <div class="content hvr-shadow" id="currency"></div>
 
             <div class="content" id="poi">
-                <ul id="poiList">    
-                </ul>
             </div>
             
             <div class="content" id="tours">
         
             </div>
-            <div class="content" id="weather"></div>
-            <div class="content" id="language"></div>
-            <div class="content" id="airport"></div>
+            <div class="content clearfix hvr-shadow" id="weather"></div>
+            <div class="content hvr-shadow" id="language"></div>
+            <div class="content hvr-shadow" id="airport"></div>
         </section>
     </section>
     
