@@ -48,21 +48,6 @@ app.getDestinationInfo = (location) => {
     });
 }
 
-// app.getCoordinates = (location) => {
-//     const geocoder = new google.maps.Geocoder();
-//     geocoder.geocode({
-//         'address': location
-//     }, (res, err) => {
-//         if (err == google.maps.GeocoderStatus.OK) {
-//             let latitude = res[0].geometry.location.lat();
-//             let longitude = res[0].geometry.location.lng();
-//             console.log(latitude, longitude);
-//         } else {
-//             alert("Something went wrong." + err);
-//         }
-//     });
-// }
-
 
 // ajax call to get weather
 // takes lat and lng coords as parameters
@@ -145,7 +130,7 @@ app.getPOIs = (cityCode) => {
 
         // if there are no results that have an image and a description, call the displayError function
         if (filteredPoints.length === 0) {
-            app.displayError('tours', 'tours');
+            app.displayError('poi', 'points of interest');
         } else {
             // take the first 3 items and push their properties onto the app.POIs object
             filteredPoints.forEach((point)=> {
@@ -199,7 +184,6 @@ app.getLanguage = (country) => {
         if (res[0].languages.length > 1) {
             app.language.secondary = res[0].languages[1].name;
         }
-        // console.log(app.language.name, app.language.nativeName);
         app.displayLanguage(app.language);
     });
 
@@ -366,23 +350,74 @@ app.displayRestaurants = (array) => {
 app.displayTours = (array) => {
     const title = `<h3>Top Tours</h3>`;
     $('#tours').append(title);
-    array.forEach((item) => {
-        const name = `<h2>${item.name}<h2>`;
-        const photo = `<img src="${item.photo}">`;
-        const link = `<a href="${item.url}">Book Now</a>`;
-        $('#tours').append(name, photo, link);
-    });
+    
+    if ($(window).width() <= 600) {	
+        let counter = 0;
+        let resultsPerPage = 3;
+        for (let i = counter; i < resultsPerPage; i++) {
+            const name = `<h2>${array[i].name}<h2>`
+            const photo = `<img src="${array[i].photo}">`;
+            const link = `<a href="${array.url}">Book Now</a>`;
+            $('#tours').append(name, photo, link);
+        }    
+
+        const loadMore = `<button class='loadMore'>Load More</button>`;
+        $('#tours').append(loadMore);
+        $('#tours').on('click', '.loadMore', function() {
+            this.remove();
+            counter++;
+            for (let i = counter; i < (counter + resultsPerPage); i++) {
+                const name = `<h2>${array[i].name}<h2>`
+                const photo = `<img src="${array[i].photo}">`;
+                const link = `<a href="${array.url}">Book Now</a>`;
+                $('#tours').append(name, photo, link);
+            }
+            $('#tours').append(loadMore);
+        });
+	} else {
+        array.forEach((item) => {
+            const name = `<h2>${item.name}<h2>`;
+            const photo = `<img src="${item.photo}">`;
+            const link = `<a href="${item.url}">Book Now</a>`;
+            $('#tours').append(name, photo, link);
+        });
+    }
 }
 
 app.displayPOIs = (array) => {
     const title = `<h3>Points of Interest</h3>`;
     $('#poi').append(title);
-    array.forEach((item) => {
-        const name = `<h2>${item.name}<h2>`;
-        const desc = `<p>${item.description}</p>`;
-        const photo = `<img src="${item.photo}">`;
-        $('#poi').append(name, photo, desc);
-    });
+    if ($(window).width() <= 600) {	
+        let counter = 0;
+        let resultsPerPage = 3;
+        for (let i = counter; i < resultsPerPage; i++) {
+            const name = `<h2>${array[i].name}<h2>`
+            const photo = `<img src="${array[i].photo}">`;
+            const link = `<a href="${array.url}">Book Now</a>`;
+            $('#poi').append(name, photo, link);
+        }    
+
+        const loadMore = `<button class='loadMore'>Load More</button>`;
+        $('#poi').append(loadMore);
+        $('#poi').on('click', '.loadMore', function() {
+            this.remove();
+            counter++;
+            for (let i = counter; i < (counter + resultsPerPage); i++) {
+                const name = `<h2>${array[i].name}<h2>`
+                const photo = `<img src="${array[i].photo}">`;
+                const link = `<a href="${array.url}">Book Now</a>`;
+                $('#poi').append(name, photo, link);
+            }
+            $('#poi').append(loadMore);
+        });
+	} else {    
+        array.forEach((item) => {
+            const name = `<h2>${item.name}<h2>`;
+            const desc = `<p>${item.description}</p>`;
+            const photo = `<img src="${item.photo}">`;
+            $('#poi').append(name, photo, desc);
+        });
+    }    
 }
 
 app.displayWeather = (object) => {
@@ -392,11 +427,6 @@ app.displayWeather = (object) => {
         <p class="weatherText">${object.conditions}</p>`
     $('#weather').append(title, icon, html);
     app.loadIcons();
-}
-
-
-app.loadSplash = () => {
-
 }
 
 app.loadIcons = () => {
