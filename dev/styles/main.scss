@@ -1,7 +1,6 @@
 @import 'setup';
 @import 'hovers';
 
-$secondary: #f2f2f2;
 
 body {
 	color: black;
@@ -37,10 +36,15 @@ button {
 	background: black;
 	color: white;
 	padding: 5px;
-	margin-left: 50%;
+	margin-left: 40%;
 	margin-top: 10px;
 	margin-bottom: 10px;
-	transform: translateX(-50%);
+	// transform: translateX(-50%);
+}
+
+a {
+	padding-bottom: 5px;
+	text-decoration: none;
 }
 
 @import 'splash';
@@ -193,13 +197,33 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
 			"airport tours tours"
 			"language tours tours";
 		grid-template-columns: 1fr 1fr 1fr;
-		grid-template-rows: 45% 45% 45% 45%;
+		grid-template-rows: 40% 40% 40% 40%;
 	}	
+
+	#weather {
+		border-bottom: 1px solid black;
+	}
+
+	#poi {
+		border-bottom: none;
+	}
+
+	#airport {
+		border-top: 1px solid black;
+		border-bottom: 1px solid black;
+	}
 }
 
 @media (max-width: 600px) {
 	#destination {
 		width: 100px;
+	}
+
+	#poi {
+		border-bottom: 1px solid black;
+	}
+	#weather {
+		border-bottom: none;
 	}
 	.container {
 		grid-template-areas: 
@@ -220,7 +244,20 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
 	}
 }
 
-@media (max-width: 350px) {
+@media (max-width: 400px) {
+	#destinationName {
+		font-size: 1rem;
+		margin-left: -12%;
+	}
+
+	#weather {
+		border-bottom: 1px solid black;
+	}
+
+	#tours {
+		border-bottom: 1px solid black;
+	}
+
 	.container {
 		grid-template-areas: 
 			"poi" 
@@ -232,6 +269,6 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
 			"language" 
 			"airport" ;
 		grid-template-columns: 100%;
-		grid-template-rows: repeat(8, 300px);
+		grid-template-rows: 275px 275px 200px 200px 275px 275px 200px 200px ;
 	}	
 }

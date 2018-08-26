@@ -353,14 +353,14 @@ app.displayTours = (array) => {
             const div = $('<div class="clearfix hvr-shadow">');
             const name = `<h2>${array[i].name}<h2>`
             const photo = `<img class="hvr-grow-shadow" src="${array[i].photo}">`;
-            const link = `<a href="${array.url}">Book Now</a>`;
+            const link = `<a class="hvr-underline-from-center" href="${array.url}">Book Now</a>`;
 
             const text = $(`<div>`).append(name, link);
             div.append(photo, text);
             $('#tours').append(div);
         }    
 
-        const loadMore = `<button class='loadMore'>Load More</button>`;
+        const loadMore = `<button class="loadMore hvr-grow-shadow">Load More</button>`;
         $('#tours').append(loadMore);
         $('#tours').on('click', '.loadMore', function() {
             this.remove();
@@ -369,7 +369,7 @@ app.displayTours = (array) => {
                 const div = $('<div class="clearfix hvr-shadow">');
                 const name = `<h2>${array[i].name}<h2>`
                 const photo = `<img class="hvr-grow-shadow"  src="${array[i].photo}">`;
-                const link = `<a href="${array.url}">Book Now</a>`;
+                const link = `<a class="hvr-underline-from-center" href="${array.url}">Book Now</a>`;
                 
                 const text = $(`<div>`).append(name, link);
                 div.append(photo, text);
@@ -384,7 +384,7 @@ app.displayTours = (array) => {
             const div = $('<div class="clearfix hvr-shadow">');
             const name = `<h2>${item.name}<h2>`;
             const photo = `<img class="hvr-grow-shadow" src="${item.photo}">`;
-            const link = `<a href="${item.url}">Book Now</a>`;
+            const link = `<a class="hvr-underline-from-center" href="${item.url}">Book Now</a>`;
             const text = $('<div>').append(name, link);
             div.append(photo, text);
             $('#tours').append(div);
@@ -411,7 +411,7 @@ app.displayPOIs = (array) => {
             $('#poi').append(div);
         }    
 
-        const loadMore = `<button class='loadMore'>Load More</button>`;
+        const loadMore = `<button class="loadMore hvr-grow-shadow">Load More</button>`;
         $('#poi').append(loadMore);
 
         $('#poi').on('click', '.loadMore', function() {
