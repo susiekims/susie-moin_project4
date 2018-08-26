@@ -31,7 +31,6 @@ app.getDestinationInfo = (location) => {
             const addressComponents = results[0].address_components.filter((component) => {
                 return component.types[0] === 'country';
             });
-
             // out of the results of the filter, get the info and populate the app.destination object
             app.destination.countryCode = addressComponents[0].short_name;
             app.destination.countryName = addressComponents[0].long_name;
@@ -116,6 +115,7 @@ app.getPOIs = (cityCode) => {
             'x-api-key': 'zziJYcjlmE8LbWHdvU5vC8UcSFvKEPsC3nkAl7eK'
         },
         data: {
+            'tags_not': 'Airport',
             'parents': cityCode,
             'level': 'poi',
             'limit': 20,
@@ -189,6 +189,7 @@ app.getLanguage = (country) => {
 
 }
 
+// 
 app.getTours = (cityCode) => {
     $.ajax({
         url: `https://api.sygictravelapi.com/1.0/en/tours/viator`,
@@ -336,17 +337,11 @@ app.displayAirports = (object) => {
     $('#airport').append(title, name, photo, desc);
 }
 
-app.displayRestaurants = (array) => {
-    const title = `<h3>Restaurants</h3>`;
-    $('#restaurants').append(title);
-    array.forEach((item) => {
-        const name = `<h2>${item.name}<h2>`;
-        const desc = `<p>${item.description}</p>`;
-        const photo = `<img src="${item.photo}">`;
-        $('#restaurants').append(name, photo, desc);
-    });
-}
-
+// method to display tours
+// i realized when there's a lot of results, it's not ideal for mobile users
+// so i tried some simple "pagination" when the screen width is less than 600px
+// create 2 variables, one to act as a "counter" and one to dictate results per page
+// when user clicks 'load more', it appends the next three results, removes the button, and appends a new button at the end of the new results
 app.displayTours = (array) => {
     const title = `<h3>Top Tours</h3>`;
     $('#tours').append(title);
@@ -355,35 +350,45 @@ app.displayTours = (array) => {
         let counter = 0;
         let resultsPerPage = 3;
         for (let i = counter; i < resultsPerPage; i++) {
+            const tourDiv = $('<div>');
             const name = `<h2>${array[i].name}<h2>`
             const photo = `<img src="${array[i].photo}">`;
             const link = `<a href="${array.url}">Book Now</a>`;
-            $('#tours').append(name, photo, link);
+            tourDiv.append(name, photo, link);
+            $('#tours').append(tourDiv);
         }    
 
         const loadMore = `<button class='loadMore'>Load More</button>`;
         $('#tours').append(loadMore);
         $('#tours').on('click', '.loadMore', function() {
             this.remove();
-            counter++;
+            counter+=3;
             for (let i = counter; i < (counter + resultsPerPage); i++) {
+                const tourDiv = $('<div>');
                 const name = `<h2>${array[i].name}<h2>`
                 const photo = `<img src="${array[i].photo}">`;
                 const link = `<a href="${array.url}">Book Now</a>`;
-                $('#tours').append(name, photo, link);
+                tourDiv.append(name, photo, link);
+                $('#tours').append(tourDiv);
             }
             $('#tours').append(loadMore);
         });
+
+        // if screen width is not less than 600px, append elements normally
 	} else {
         array.forEach((item) => {
+            const tourDiv = $('<div>');
             const name = `<h2>${item.name}<h2>`;
             const photo = `<img src="${item.photo}">`;
             const link = `<a href="${item.url}">Book Now</a>`;
-            $('#tours').append(name, photo, link);
+            tourDiv.append(name, photo, link);
+            $('#tours').append(tourDiv);
         });
     }
 }
 
+// method to display points of interest
+// same "pagination" system as tours
 app.displayPOIs = (array) => {
     const title = `<h3>Points of Interest</h3>`;
     $('#poi').append(title);
@@ -391,31 +396,39 @@ app.displayPOIs = (array) => {
         let counter = 0;
         let resultsPerPage = 3;
         for (let i = counter; i < resultsPerPage; i++) {
-            const name = `<h2>${array[i].name}<h2>`
+            const poiDiv = $('<div>');
+            const name = `<h2>${array[i].name}<h2>`;
+            const desc = `<p>${array[i].description}</p>`;
             const photo = `<img src="${array[i].photo}">`;
-            const link = `<a href="${array.url}">Book Now</a>`;
-            $('#poi').append(name, photo, link);
+            poiDiv.append(name, photo, desc);
+            $('#poi').append(poiDiv);
         }    
 
         const loadMore = `<button class='loadMore'>Load More</button>`;
         $('#poi').append(loadMore);
+
         $('#poi').on('click', '.loadMore', function() {
             this.remove();
-            counter++;
+            counter+=3;
             for (let i = counter; i < (counter + resultsPerPage); i++) {
-                const name = `<h2>${array[i].name}<h2>`
+                const poiDiv = $('<div>');
+                const name = `<h2>${array[i].name}<h2>`;
+                const desc = `<p>${array[i].description}</p>`;
                 const photo = `<img src="${array[i].photo}">`;
-                const link = `<a href="${array.url}">Book Now</a>`;
-                $('#poi').append(name, photo, link);
+                poiDiv.append(name, photo, desc);
+                $('#poi').append(poiDiv);
             }
             $('#poi').append(loadMore);
         });
+        // else just append all the results normally
 	} else {    
         array.forEach((item) => {
+            const poiDiv = $('<div>');
             const name = `<h2>${item.name}<h2>`;
             const desc = `<p>${item.description}</p>`;
             const photo = `<img src="${item.photo}">`;
-            $('#poi').append(name, photo, desc);
+            poiDiv.append(name, photo, desc);
+            $('#poi').append(poiDiv);
         });
     }    
 }
@@ -427,6 +440,14 @@ app.displayWeather = (object) => {
         <p class="weatherText">${object.conditions}</p>`
     $('#weather').append(title, icon, html);
     app.loadIcons();
+}
+
+app.randomHero = () => {
+    let i = Math.floor(Math.random() * 5) + 1
+    console.log(i);
+    $('.splashPage').css({
+        'background': `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../../public/assets/hero${i}.jpg")`
+    });
 }
 
 app.loadIcons = () => {
@@ -449,7 +470,7 @@ app.events = () => {
     $('form').on('submit', (e) => {
         $('#splashPage').toggle(false);
         $('#contentPage').toggle(true);
-        $('form').removeClass('splashPageSearch');
+        $('form').removeClass('splashSearchForm');
         $('#destination').removeClass('splashSearchBar');
         $('form').addClass('contentSearchForm');
         $('#destination').addClass('contentSearchBar');
@@ -472,6 +493,7 @@ app.events = () => {
 }
 
 app.init = () => {
+    app.randomHero();
     app.events();
 }
 

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="public/styles/style.css">
     <title>GetGo</title>
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 </head>
 <body>
     <section class="splashPage" id="splashPage">
@@ -14,7 +15,7 @@
         <h2 class="tagline">Get going on your next adventure</h2>
     </section>
     
-    
+
     <section class="contentPage" id="contentPage">
         <header>
             <!-- <form>
@@ -26,17 +27,23 @@
         </header>
         <section class="container">
             <div class="content" id="currency"></div>
-            <div class="content" id="poi"></div>
-            <div class="content" id="tours"></div>
+
+            <div class="content" id="poi">
+                <ul id="poiList">    
+                </ul>
+            </div>
+            
+            <div class="content" id="tours">
+        
+            </div>
             <div class="content" id="weather"></div>
             <div class="content" id="language"></div>
             <div class="content" id="airport"></div>
         </section>
     </section>
     
-    <form action="" class="splashPageSearch">
+    <form action="" class="splashSearchForm">
         <input type="search" class="splashSearchBar" placeholder="Enter a destination" class="autocomplete" id="destination">
-        <input type="submit">
     </form>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>

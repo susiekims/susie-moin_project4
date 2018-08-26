@@ -19,7 +19,6 @@ header {
 	height: 25px;
 }
 
-
 .container {
 	width: 100vw;
 	height: calc(100vh - 25px);
@@ -69,7 +68,7 @@ input[type=search] {
 	width: 300px;
 }
 
-.container div {
+.content {
 	border: 1px solid black;
 	// background: #f6f6f6;
 	padding: 20px;
@@ -120,16 +119,14 @@ input[type=search] {
 	.container {
 		grid-template-areas: 
 			"poi" 
-			"poi"
 			"poi" 
 			"weather" 
 			"currency"
 			"tours" 
-			"tours"
-			"tours"
+			"tours" 
 			"language" 
 			"airport" ;
 		grid-template-columns: 100%;
-		grid-template-rows: repeat(10, 350px);
+		grid-template-rows: repeat(8, 300px);
 	}	
 }

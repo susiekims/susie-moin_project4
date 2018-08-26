@@ -6,9 +6,7 @@
 
 .splashPage {
 	height: 100vh;
-	// background: pink;
-	// background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
-	background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("https://images.unsplash.com/photo-1502726488490-f99c74217a37?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=adf20c4286d52543f480e76530c3e9af&auto=format&fit=crop&w=1350&q=80");
+	// background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../../public/assets/hero2.jpg");
 	background-position: center;
 	background-size: cover;	
 
@@ -29,7 +27,7 @@
 	font-weight: 300;
 }
 
-.splashPageSearch {
+.splashSearchForm {
 	position: absolute;
 	left: 50%;
 	top: 50%;
