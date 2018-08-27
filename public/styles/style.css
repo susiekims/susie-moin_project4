@@ -523,12 +523,17 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
     border-top: 1px solid black;
     border-bottom: 1px solid black; } }
 
-@media (max-width: 600px) {
+@media (max-width: 630px) {
   #destination {
     width: 100px; }
   #poi {
     border-bottom: 1px solid black; }
   #weather {
+    border-bottom: none; }
+  #tours {
+    border-bottom: 1px solid black; }
+  #airport {
+    border-top: none;
     border-bottom: none; }
   .container {
     grid-template-areas: "poi poi" "poi poi"  "weather currency" "tours tours" "tours tours" "language airport";
