@@ -484,8 +484,6 @@ app.events = () => {
     $('form').on('submit', (e) => {
         const destination = $('#destination').val();
         if (destination.length > 0) {
-            $('.contentSearchForm').toggle(false);
-            $('#destinationName').toggle(true);
             $('#splashPage').toggle(false);
             $('#contentPage').toggle(true);
             $('form').removeClass('splashSearchForm');
@@ -512,7 +510,6 @@ app.events = () => {
 
     $('#searchMenu').on('click', function() {
         $('.contentSearchForm').toggle();
-        $('#destinationName').toggle();
     });
 }
 

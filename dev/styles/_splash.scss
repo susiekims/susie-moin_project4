@@ -38,7 +38,7 @@
 	border-radius: 10px;
 	display: flex;
 	justify-content: center;
-	// width: 400px;
+	width: 300px;
 }
 
 .splashSearchBar {
@@ -49,7 +49,7 @@
 	padding: 0px;
 	border-bottom: 0.5px solid white;
 	font-size: 1rem;
-	width: 300px;
+	flex-basis: 90%;
 }
 
 .splashSearchBar::placeholder {
