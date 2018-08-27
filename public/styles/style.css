@@ -139,6 +139,7 @@ a {
   color: inherit; }
 
 input {
+  -webkit-appearance: none;
   border-radius: 0; }
 
 .hvr-shadow {
