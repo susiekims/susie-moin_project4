@@ -415,6 +415,8 @@ header {
   width: 100%;
   height: 40px;
   border-bottom: 1px solid black; }
+  header h4 {
+    margin-left: 15px; }
 
 #destinationName {
   position: absolute;
@@ -440,8 +442,12 @@ header {
   max-width: 100px; }
 
 #poi > div {
+  width: 100%;
   padding: 25px 0px;
-  border-bottom: 1px solid #999999; }
+  border-bottom: 1px solid #d3d3d3; }
+
+#poi > div:last-of-type {
+  border-bottom: none; }
 
 #poi {
   grid-area: poi;
@@ -458,6 +464,8 @@ header {
     clear: both; }
   #weather canvas {
     float: left; }
+  #weather h3 {
+    margin-bottom: 10px; }
 
 #currency {
   grid-area: currency; }
@@ -478,8 +486,10 @@ header {
     margin-right: 15px; }
   #tours > div {
     padding: 25px 0px;
-    border-bottom: 1px solid #999999;
+    border-bottom: 1px solid #d3d3d3;
     width: 100%; }
+  #tours > div:last-of-type {
+    border: none; }
 
 #language {
   grid-area: language;
