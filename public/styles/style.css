@@ -138,6 +138,9 @@ a {
   border: none;
   color: inherit; }
 
+input {
+  border-radius: 0; }
+
 .hvr-shadow {
   display: inline-block;
   vertical-align: middle;
