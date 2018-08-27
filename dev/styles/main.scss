@@ -1,6 +1,7 @@
 @import 'setup';
 @import 'hovers';
 
+$secondary: #f6f6f6;
 
 body {
 	color: black;
@@ -69,7 +70,8 @@ header {
 
 .container {
 	width: 100vw;
-	height: calc(100vh - 40px);
+	height: calc(100vh - 45px);
+	min-height: 600px;
 	display: grid;
 	grid-template-areas: 
 	"poi poi weather currency"

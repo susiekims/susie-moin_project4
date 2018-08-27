@@ -457,7 +457,7 @@ app.randomHero = () => {
     let i = Math.floor(Math.random() * 5) + 1
     console.log(i);
     $('.splashPage').css({
-        'background': `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../../public/assets/hero${i}.jpg")`,
+        'background': `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("public/assets/hero${i}.jpg")`,
         'background-position': 'center',
 	    'background-size': 'cover'	
     });

@@ -138,9 +138,6 @@ a {
   border: none;
   color: inherit; }
 
-body {
-  background: red; }
-
 .hvr-shadow {
   display: inline-block;
   vertical-align: middle;
@@ -170,8 +167,8 @@ body {
   left: 51%;
   right: 51%;
   bottom: 0;
-  background: red;
-  height: 1px;
+  background: black;
+  height: 2px;
   -webkit-transition-property: left, right;
   transition-property: left, right;
   -webkit-transition-duration: 0.2s;
@@ -331,7 +328,7 @@ body {
   color: black;
   font-size: 62.5%;
   font-family: "Work Sans", sans-serif;
-  background: #f2f2f2; }
+  background: #f6f6f6; }
 
 h2 {
   cursor: pointer;
@@ -427,7 +424,8 @@ header {
 
 .container {
   width: 100vw;
-  height: calc(100vh - 40px);
+  height: calc(100vh - 45px);
+  min-height: 600px;
   display: grid;
   grid-template-areas: "poi poi weather currency" "poi poi tours tours" "language airport tours tours";
   grid-template-columns: 25% 25% 25% 25%;
@@ -468,7 +466,7 @@ header {
   border: none;
   border-bottom: 2px solid black;
   padding: 10px 25px 10px 0px;
-  background: #f2f2f2; }
+  background: #f6f6f6; }
 
 #tours {
   grid-area: tours;
@@ -516,7 +514,7 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
   .container {
     grid-template-areas: "poi poi weather" "poi poi currency"  "airport tours tours" "language tours tours";
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 45% 45% 45% 45%; }
+    grid-template-rows: 40% 40% 40% 40%; }
   #weather {
     border-bottom: 1px solid black; }
   #poi {
