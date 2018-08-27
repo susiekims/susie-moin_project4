@@ -252,7 +252,7 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
 
 app.displayError = (divID, topic) => {
     const title = `<h3>${topic}</h3>`;
-    $(`#${divID}`).append(title, `<h2>Sorry, we don't have detailed information about ${topic} in this area. Try your search again in a nearby city or related area.</h2>`);
+    $(`#${divID}`).append(title, `<h2>Sorry, we don't have detailed information about ${topic} in this area. Try your search again in a related city or nearby region.</h2>`);
 }
 
 
