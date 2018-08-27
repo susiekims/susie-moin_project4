@@ -68,6 +68,14 @@
 		border-bottom: 1px solid black;
 	}
 
+	#contentSearchForm {
+		display: none;
+	}
+
+	#poi {
+		margin-top: 80px;
+	}
+
 	.splashSearchForm {
 		width: 300px;
 	}
@@ -79,7 +87,6 @@
 	}
 	
 	.container {
-		margin-top: 40px;
 		grid-template-areas: 
 			"poi" 
 			"poi" 
