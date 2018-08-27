@@ -254,7 +254,7 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
         app.currency.exchangeRate = res[`${userCurrency}_${destinationCurrency}`];
         console.log(app.currency.exchangeRate);
 
-        $('#currency').append(`<h2>$1 ${userCurrency} = ${app.currency.symbol} ${app.currency.exchangeRate.toFixed(2)} ${destinationCurrency}</h2>`)
+        $('#currency h2').text(`$1 ${userCurrency} = ${app.currency.symbol} ${app.currency.exchangeRate.toFixed(2)} ${destinationCurrency}`)
 
     });
 }
@@ -269,7 +269,7 @@ app.displayError = (divID, topic) => {
 app.displayCurrency = (object) => {
     const title = `<h3>Currency</h3>`;
     const html = `<h2>The currency used is ${object.symbol} ${object.code}</h2>`;
-    const input = `<form id="userCurrency"><input class="userCurrency  type="search" id="user" placeholder="Enter your location."></form>`;
+    const input = `<form id="userCurrency"><input class="userCurrency  type="search" id="user" placeholder="Enter your location."><button class="submit">Convert</button></form>`;
     $('#currency').append(title,html, input);
     app.getUserInfo();
 }
@@ -447,7 +447,7 @@ app.displayWeather = (object) => {
     const title = `<h3>Weather</h3>`;
     const icon = `<canvas id="${object.icon}" width="80" height="80"></canvas>`;
     const html = `<h2>Currently:</h2> 
-    <h4>${object.currentTemp}</h4>
+    <h4>${object.currentTemp}°C</h4>
         <p class="weatherText">${object.conditions}</p>`
     $('#weather').append(title, icon, html);
     app.loadIcons();
@@ -480,21 +480,25 @@ app.loadIcons = () => {
 
 app.events = () => {
     app.initAutocomplete('destination');
+   
     $('form').on('submit', (e) => {
-        $('#splashPage').toggle(false);
-        $('#contentPage').toggle(true);
-        $('form').removeClass('splashSearchForm');
-        $('#destination').removeClass('splashSearchBar');
-        $('form').addClass('contentSearchForm');
-        $('#destination').addClass('contentSearchBar');
-        e.preventDefault();
-        $('div').empty();
         const destination = $('#destination').val();
         if (destination.length > 0) {
+            $('.contentSearchForm').toggle(false);
+            $('#destinationName').toggle(true);
+            $('#splashPage').toggle(false);
+            $('#contentPage').toggle(true);
+            $('form').removeClass('splashSearchForm');
+            $('#destination').removeClass('splashSearchBar');
+            $('#submitButton').removeClass('splashSearchButton');
+            $('#submitButton').addClass('contentSearchButton');
+            $('form').addClass('contentSearchForm');
+            $('#destination').addClass('contentSearchBar');
+            e.preventDefault();
+            $('div').empty();
             $('#destinationName').text(destination);
             app.getDestinationInfo(destination);
         }
-        $('#destination').val('');
         app.destination = {};
         app.weather = {};
         app.currency= {};
@@ -503,6 +507,12 @@ app.events = () => {
         app.tours = [];
         app.airport = {};
         app.languages = {};
+        $('#destination').val('');
+    });
+
+    $('#searchMenu').on('click', function() {
+        $('.contentSearchForm').toggle();
+        $('#destinationName').toggle();
     });
 }
 

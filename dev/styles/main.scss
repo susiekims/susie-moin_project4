@@ -37,10 +37,8 @@ button {
 	background: black;
 	color: white;
 	padding: 5px;
-	margin-left: 40%;
 	margin-top: 10px;
 	margin-bottom: 10px;
-	// transform: translateX(-50%);
 }
 
 a {
@@ -61,8 +59,11 @@ header {
 	height: 40px;
 	border-bottom:  1px solid black;
 
-	h4 {
+	a {
 		margin-left: 15px;
+		font-weight: 600;
+		font-size: 1.5rem;
+		margin-top: 5px;
 	}
 }
 
@@ -71,6 +72,10 @@ header {
 	left: 50%;
 	transform: translateX(-50%);
 	top: 8px;
+	width: 300px;                  /* IE6 needs any width */
+    overflow: hidden;           
+	text-overflow: ellipsis; 
+	text-align: center;
 }
 
 .container {
@@ -88,6 +93,10 @@ header {
 
 .content {
 	padding: 20px;
+}
+
+#searchMenu {
+	display: none;
 }
 
 
@@ -114,6 +123,10 @@ header {
 	overflow-y: scroll;
 	border-right: 1px solid black;
 	border-bottom: 1px solid black;
+
+	button {
+		margin-left: 40%;
+	}
 }
 
 #weather {
@@ -170,26 +183,25 @@ header {
 	> div:last-of-type {
 		border: none;
 	}
+
+	button {
+		margin-left: 40%;
+	}
 }
 
 
 #language {
 	grid-area: language;
 	border-right:  1px solid black;
-	// background: PURPLE;
 }
 
 #airport{
 	grid-area: airport;
 	border-right: 1px solid black;
-	// background: BROWN;
 }
 
 input[type=search]:focus, input[type=text]:focus, #user:focus {
-	box-shadow: 0 0 5px rgba(81, 203, 238, 1);
-	padding: 3px 0px 3px 3px;
-	margin: 5px 1px 3px 0px;
-	border: 1px solid rgba(81, 203, 238, 1);
+	border-bottom: 2px solid rgba(81, 203, 238, 0.5);
 }
 
 .contentSearchForm {
@@ -202,11 +214,21 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
 
 .contentSearchBar {
 	background: none;
-	font-size: 0.8rem;
+	font-size: 0.6rem;
 	color: black;
 	border: 1px solid black;
 	border-radius: 1.5rem;
 	padding: 5px;
+}
+
+.contentSearchButton {
+	font-size: 0.8rem;
+	// position: absolute;
+	color: black;
+	background:none;
+	position: absolute;
+	right: 2px;
+	top: -10px;
 }
 
 @media (max-width: 900px) {
@@ -235,8 +257,9 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
 }
 
 @media (max-width: 630px) {
-	#destination {
-		width: 100px;
+	#destinationName {
+		font-size: 1rem;
+		margin-left: 20px;
 	}
 
 	#poi {
@@ -255,6 +278,10 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
 		border-bottom: none;
 	}
 
+	#logo {
+		display:none;
+	}
+
 	.container {
 		grid-template-areas: 
 			"poi poi"
@@ -264,30 +291,69 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
 			"tours tours"
 			"language airport" ;
 		grid-template-columns: 50% 50%;
-		grid-template-rows: repeat(6, 33vh);
+		grid-template-rows: repeat(6, 40vh);
 	}	
 }
 
-@media (max-width: 500px) {
-	#logo {
-		display:none;
-	}
-}
-
 @media (max-width: 400px) {
-	#destinationName {
-		font-size: 1rem;
-		margin-left: -12%;
-	}
-
-	#weather {
+	#weather, #tours, #language {
 		border-bottom: 1px solid black;
 	}
 
-	#tours {
-		border-bottom: 1px solid black;
+	.contentSearchForm {
+		z-index: 3;
+		display: none;
+		background: rgba(0, 0, 0, 0.7);
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 	}
 
+	.contentSearchBar {
+		color: white;
+		font-size: 1.2rem;
+		text-align: center;
+		border: none;
+		border-radius: 0px;
+		border-bottom: 2px solid white;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%); 
+	}
+
+	.contentSearchButton {
+		color: white;
+		font-size: 1.2rem;
+		position: absolute;
+		top: 50%;
+		transform: translate(-50%, -70%);
+		}
+
+	.contentSearchBar::placeholder {
+		opacity: 1;
+	}
+
+	#searchMenu {
+		z-index: 3;
+		display: block;
+		margin-top: 2px;
+		font-size: 1.5rem;
+		background: none;
+		color: black;
+		position: fixed;
+		right: 0;
+		top: 0;
+	}
+
+	header {
+		position: fixed;
+		z-index: 1;
+		background: $secondary;
+	}
+	
 	.container {
 		grid-template-areas: 
 			"poi" 
@@ -299,6 +365,6 @@ input[type=search]:focus, input[type=text]:focus, #user:focus {
 			"language" 
 			"airport" ;
 		grid-template-columns: 100%;
-		grid-template-rows: 275px 275px 200px 200px 275px 275px 200px 200px ;
+		grid-template-rows: 295px 295px 200px 200px 295px 295px 200px 200px ;
 	}	
 }
