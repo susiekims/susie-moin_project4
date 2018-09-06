@@ -251,7 +251,7 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
 }
 
 app.displayError = (divID, topic) => {
-    $(`#${divId}`).find('i').toggle(false);
+    $(`#${divID}`).find('i').toggle(false);
     const title = `<h3>${topic}</h3>`;
     $(`#${divID}`).append(title, `<h2>Sorry, we don't have detailed information about ${topic} in this area. Try your search again in a related city or nearby region.</h2>`);
 }
@@ -353,7 +353,7 @@ app.displayTours = (array) => {
         $('#tours').append(loadMore);
         $('#tours').on('click', '.loadMore', function() {
             this.remove();
-            counter+=3;
+            counter+=resultsPerPage;
             for (let i = counter; i < (counter + resultsPerPage); i++) {
                 const div = $('<div class="clearfix hvr-shadow">');
                 const name = `<h2>${array[i].name}<h2>`
