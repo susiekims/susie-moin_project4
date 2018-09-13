@@ -3,12 +3,9 @@
 @import 'typography';
 @import 'splash';
 
-input {
-    border-radius: 0;
-}
-
-input {
-    -webkit-appearance: none;
+input[type=text] {
+	border-radius: 0;
+	-webkit-appearance: none;
 }
 
 header {
