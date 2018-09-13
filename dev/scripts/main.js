@@ -522,3 +522,6 @@ app.init = () => {
 $(function () {
     app.init();
 });
+
+
+const searchAdrress = '${address.components[0].longname}, '
