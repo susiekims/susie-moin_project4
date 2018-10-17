@@ -32,6 +32,7 @@
 
 	#poi {
 		border-bottom: 1px solid black;
+		border-right: none;
 	}
 	#weather {
 		border-bottom: none;
@@ -44,6 +45,7 @@
 	#airport {
 		border-top: none;
 		border-bottom: none;
+		border-right: none;
 	}
 
 	#logo {
@@ -63,27 +65,49 @@
 	}	
 }
 
-@media (max-width: 400px) {
-	#weather, #tours, #language {
-		border-bottom: 1px solid black;
+@media (max-width: 550px) {
+	header {
+		height: 80px;
+		position: fixed;
+		z-index: 1;
+		background: $secondary;
+	}
+	.contentSearchForm {
+		position: fixed;
+		background: none;
+		left: 50%;
+		top: 40px;
+		transform: translateX(-50%);
+		width: 300px;
+		z-index: 1;
 	}
 
-	.contentSearchForm {
-		display: none;
+	.contentSearchBar {
+		background: none;
+		font-size: 0.6rem;
+		color: black;
+		border: 1px solid black;
+		border-radius: 1.5rem;
+		padding: 5px;
+		width: 250px;
 	}
 
 	#poi {
 		margin-top: 80px;
 	}
+}
+
+@media (max-width: 400px) {
+	#weather, #tours, #language {
+		border-bottom: 1px solid black;
+	}
+
+	#weather, #language, #airport {
+		border-right: none;
+	}
 
 	.splashSearchForm {
 		width: 300px;
-	}
-
-	header {
-		position: fixed;
-		z-index: 1;
-		background: $secondary;
 	}
 	
 	.container {

@@ -12,6 +12,7 @@ header {
 	width: 100%;
 	height: 40px;
 	border-bottom:  1px solid black;
+	display: flex;
 
 	a {
 		margin-left: 15px;
@@ -25,13 +26,12 @@ header {
 		left: 50%;
 		transform: translateX(-50%);
 		top: 8px;
-		width: 300px;                  /* IE6 needs any width */
+		width: 300px;                
 		overflow: hidden;           
 		text-overflow: ellipsis; 
 		text-align: center;
 	}
 }
-
 
 .container {
 	width: 100vw;
@@ -82,8 +82,6 @@ header {
 #weather {
 	grid-area: weather;
 	border-right:  1px solid black;
-	// background: yellow;
-
 	p {
 		font-size: 1rem;
 		clear: both;
@@ -101,7 +99,6 @@ header {
 
 #currency {
 	grid-area: currency;
-	// background: blue;
 	button {
 		display: block;
 	}
@@ -116,7 +113,6 @@ header {
 
 #tours{
 	grid-area: tours;
-	// background: green;
 	border-top: 1px solid black;
 	overflow-y: scroll;
 
@@ -177,7 +173,6 @@ header {
 
 .contentSearchButton {
 	font-size: 0.8rem;
-	// position: absolute;
 	color: black;
 	background:none;
 	position: absolute;
