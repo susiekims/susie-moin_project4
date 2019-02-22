@@ -240,7 +240,8 @@ app.convertCurrency = (userCurrency, destinationCurrency) => {
         dataType: 'json',
         data: {
             q: `${userCurrency}_${destinationCurrency},${destinationCurrency}_${userCurrency}`,
-            compact: 'ultra'
+            compact: 'ultra',
+		apiKey: '949266333ea08fa4886b'
         }
     }).then((res) => {
         app.currency.exchangeRate = res[`${userCurrency}_${destinationCurrency}`];
